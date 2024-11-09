@@ -8,12 +8,12 @@ export default function Category() {
         <p className="max-w-70xl pl-4 text-xl md:text-5xl font-bold text-red-700 dark:text-neutral-200 font-sans">
           Category
         </p>
-        <a
+        <Link
           href="#"
           className="text-xl md:text-3xl text-yellow-500 font-bold hover:text-orange-300"
         >
           View All
-        </a>
+        </Link>
       </div>
       <div className="m-0 flex justify-center flex-row gap-5 lg:gap-24 items-center w-full p-auto lg:px-64">
         <Link href="#">
