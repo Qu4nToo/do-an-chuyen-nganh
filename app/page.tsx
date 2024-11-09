@@ -2,7 +2,6 @@
 import React from "react";
 
 import Category from "@/components/features/category";
-import Image from "next/image";
 import Navbar from "@/components/features/navigation";
 import BannerCard from "@/components/features/banner";
 import BestSeller from "@/components/features/best-seller";
