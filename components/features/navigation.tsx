@@ -11,7 +11,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 const navigation = [
@@ -108,13 +108,13 @@ export default function Navbar() {
               <span className="sr-only">View notifications</span>
               <BellIcon aria-hidden="true" className="h-6 w-6" />
             </button>
-            <Link href="/Login">
+            <Link href="/login">
               <button
                 type="button"
                 className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
               >
                 <span className="absolute -inset-1.5" />
-                <span className="sr-only">Login</span>
+                <span className="sr-only">login</span>
                 <FontAwesomeIcon icon={faUser} className="h-5 w-6" />
               </button>
             </Link>
