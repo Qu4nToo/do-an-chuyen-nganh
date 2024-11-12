@@ -17,53 +17,53 @@ export default function Category() {
       </div>
       <div className="m-0 flex justify-center flex-row gap-5 lg:gap-24 items-center w-full p-auto lg:px-64">
         <Link href="#">
-          <Button className="h-32 w-32 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
+          <Button className="md:h-32 md:w-32 h-14 w-14 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
             <img
               src="/btnBurger.png"
               alt=""
-              className="w-[80%] h-[80%] object-fill"
+              className="w-full h-full md:w-[80%] md:h-[80%] object-fill"
             />
-            <p className="text-xl font-bold">Burger</p>
+            <p className="md:text-xl font-bold text-xs">Burger</p>
           </Button>
         </Link>
         <Link href="#">
-          <Button className="h-32 w-32 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
+          <Button className="md:h-32 md:w-32 h-14 w-14 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
             <img
               src="/btnFries.png"
               alt=""
-              className="w-[80%] h-[80%] object-fill"
+              className="md:w-[80%] md:h-[80%] object-fill"
             />
-            <p className="text-xl font-bold">Fries</p>
+            <p className="md:text-xl font-bold text-xs">Fries</p>
           </Button>
         </Link>
         <Link href="#">
-          <Button className="h-32 w-32 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
+          <Button className="md:h-32 md:w-32 h-14 w-14 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
             <img
               src="/btnPizza.png"
               alt=""
-              className="w-[80%] h-[80%] object-fill"
+              className="md:w-[80%] md:h-[80%] object-fill"
             />
-            <p className="text-xl font-bold">Pizza</p>
+            <p className="md:text-xl font-bold text-xs">Pizza</p>
           </Button>
         </Link>
         <Link href="#">
-          <Button className="h-32 w-32 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
+          <Button className="md:h-32 md:w-32 h-14 w-14 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
             <img
               src="/btnChicken.png"
               alt=""
-              className="w-[80%] h-[80%] object-fill"
+              className="md:w-[80%] md:h-[80%] object-fill"
             />
-            <p className="text-xl font-bold">Chicken</p>
+            <p className="md:text-xl font-bold text-xs">Chicken</p>
           </Button>
         </Link>
         <Link href="#">
-          <Button className="h-32 w-32 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
+          <Button className="md:h-32 md:w-32 h-14 w-14 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0">
             <img
               src="/btnHotDog.png"
               alt=""
-              className="w-[80%] h-[80%] object-fill"
+              className="md:w-[80%] md:h-[80%] object-fill"
             />
-            <p className="text-xl font-bold">Hot Dog</p>
+            <p className="md:text-xl font-bold text-xs">Hot Dog</p>
           </Button>
         </Link>
       </div>
