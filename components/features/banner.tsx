@@ -8,12 +8,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Link from "next/link";
 
 export default function BannerCard() {
   return (
     <Carousel>
       <CarouselContent>
-      <CarouselItem>
+        <CarouselItem>
           <div className="flex flex-col items-center bg-gradient-to-r from-orange-300 to-orange-500 p-10  rounded-lg shadow-lg md:flex-row pt-10 pb-10 mx-auto mt-10 mb-4 h-auto w-auto ">
             <div className="flex flex-col justify-between p-auto lg:p-24 leading-normal">
               <h1 className="text-sm md:text-6xl font-bold text-red-600 mb-0">
@@ -23,9 +24,11 @@ export default function BannerCard() {
                 Nếu bạn chưa biết nên ăn gì thì hãy đến và order ngay. Để có thể
                 thưởng thức những món ăn ngon và vô cùng hấp dẫn.
               </p>
-              <Button className="w-40 mt-4 bg-orange-600 font-bold">
-                Order Now
-              </Button>
+              <Link href="/menu">
+                <Button className="w-40 mt-4 bg-orange-600 font-bold">
+                  Order Now
+                </Button>
+              </Link>
             </div>
             <img
               className="object-center w-auto h-auto md:h-[40%] md:w-[40%] rounded-xl m-auto mt-3 md:m-10"
@@ -78,7 +81,7 @@ export default function BannerCard() {
         </CarouselItem>
       </CarouselContent>
       <div className="mt-4 container flex justify-center">
-        <CarouselPrevious />  
+        <CarouselPrevious />
         <p>&ensp;</p>
         <CarouselNext />
       </div>

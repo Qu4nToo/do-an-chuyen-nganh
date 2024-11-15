@@ -24,10 +24,10 @@ export default function ProductCard() {
           100.000 VND
         </p>
         <div className="flex justify-between">
-          <Button className=" bg-red-600 hover:bg-gray-600 rounded-full md:w-10 md:h-10 w-auto h-auto">
+          <Button className=" bg-red-600 hover:bg-orange-400 rounded-full md:w-10 md:h-10 w-auto h-auto">
             <FontAwesomeIcon icon={faPlus}/>
           </Button>
-          <Button className=" bg-red-600 hover:bg-gray-600 gap-0">
+          <Button className=" bg-red-600  hover:bg-orange-400 gap-0">
             <p className="text-xl font-bold">Buy Now</p>
           </Button>
         </div>
