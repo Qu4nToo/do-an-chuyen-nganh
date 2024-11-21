@@ -103,9 +103,8 @@ export default function BestSeller() {
         <Carousel>
           <CarouselContent className="md:p-11">
             {products.map((item) => (
-              <CarouselItem className="sm:basis-full md:basis-1/2 lg:basis-1/3 flex justify-center">
+              <CarouselItem key={item.id} className="sm:basis-full md:basis-1/2 lg:basis-1/3 flex justify-center">
                 <div
-                  key={item.id}
                   className="w-80 h-auto bg-white border border-gray-200 rounded-lg shadow-xl dark:bg-gray-800 dark:border-gray-700 flex flex-col p-5 items-center"
                 >
                   <img
