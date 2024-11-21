@@ -39,7 +39,7 @@ export default function Menu() {
   return (
     <div className="m-0 flex justify-center flex-row gap-5 lg:gap-24 items-center w-full p-10 lg:px-64 border-b-2 border-black">
       {menu.map((item) => (
-          <Button id={item.title} className="md:h-32 md:w-32 h-14 w-14 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0" >
+          <Button key={item.id} id={item.title} className="md:h-32 md:w-32 h-14 w-14 bg-orange-400 hover:bg-orange-700 flex flex-col p-5 gap-0" >
             <img
               src={item.img}
               alt=""
