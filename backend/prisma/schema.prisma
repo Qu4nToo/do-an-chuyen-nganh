@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String  @id @default(uuid()) @db.Char(36)
+  firstName   String? @db.VarChar(30)
+  lastName    String? @db.VarChar(30)
+  passWord    String? @db.VarChar(30)
+  phoneNumber String? @unique @db.Char(10)
+  address     String? @db.VarChar(30)
+  email       String? @unique @db.VarChar(30)
+  roleID      String
+  role        Role    @relation(fields: [roleID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orders      Order[]
+}
+
+enum RoleName {
+  ADMIN
+  USER
+}
+
+model Role {
+  id       String    @id @default(uuid()) @db.Char(36)
+  roleName RoleName? @default(USER)
+  users    User[]
+}
+
+enum OrderStatus {
+  PENDING // Đơn hàng đang chờ xử lý
+  PROCESSING // Đơn hàng đang được xử lý
+  COMPLETED // Đơn hàng đã hoàn thành
+  CANCELLED // Đơn hàng đã bị hủy
+}
+
+model Order {
+  id           String        @id @default(uuid()) @db.Char(36)
+  status       OrderStatus?  @default(PENDING)
+  userID       String
+  user         User          @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  coupons      Coupon[]
+  orderDetails OrderDetail[]
+}
+
+model Coupon {
+  id            String    @id @default(uuid()) @db.Char(36)
+  endDate       DateTime?
+  startDate     DateTime?
+  discountValue Int?
+  couponCode    String?   @unique @default(uuid())
+  orderID       String
+  order         Order     @relation(fields: [orderID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Category {
+  id           String    @id @default(uuid()) @db.Char(36)
+  categoryName String?   @db.VarChar(30)
+  products     Product[]
+}
+
+model Product {
+  id           String        @id @default(uuid()) @db.Char(36)
+  title        String?       @db.VarChar(30)
+  description  String?       @db.VarChar(50)
+  price        Decimal?
+  categoryID   String
+  category     Category      @relation(fields: [categoryID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orderDetails OrderDetail[]
+}
+
+model OrderDetail {
+  orderID    String    @db.Char(36)
+  productID  String    @db.Char(36)
+  totalPrice Float?
+  quantity   Int?
+  orderDate  DateTime?
+  order      Order     @relation(fields: [orderID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  product    Product   @relation(fields: [productID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([orderID, productID])
+}
