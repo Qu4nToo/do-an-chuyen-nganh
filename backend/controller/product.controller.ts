@@ -5,11 +5,11 @@ const prisma = new PrismaClient();
 // Tạo Product mới
 export const createProduct = async (req, res) => {
   try {
-    const { title, description, price, categoryID } = req.body;
+    const { title, description, price, categoryID, image } = req.body;
 
     // Kiểm tra các trường bắt buộc
-    if (!title || !description || !price || !categoryID) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!title || !description || !price || !categoryID || !image) {
+      return res.status(400).json({ error: 'Thiếu trường thông tin' });
     }
 
     // Tạo product mới
@@ -17,6 +17,7 @@ export const createProduct = async (req, res) => {
       data: {
         title,
         description,
+        image,
         price,
         categoryID,
       },
@@ -60,7 +61,7 @@ export const getProductById = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: 'Không tìm thấy Product' });
     }
 
     return res.status(200).json(product);
@@ -74,7 +75,7 @@ export const getProductById = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, price, categoryID } = req.body;
+    const { title, description, price, categoryID, image } = req.body;
 
     const updatedProduct = await prisma.product.update({
       where: { id },
@@ -82,6 +83,7 @@ export const updateProduct = async (req, res) => {
         title,
         description,
         price,
+        image,
         categoryID,
       },
     });
@@ -89,7 +91,7 @@ export const updateProduct = async (req, res) => {
     return res.status(200).json(updatedProduct);
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: 'Không tìm thấy Product' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -106,10 +108,10 @@ export const deleteProduct = async (req, res) => {
       where: { id },
     });
 
-    return res.status(200).json({ message: 'Product deleted successfully' });
+    return res.status(200).json({ message: 'Xóa Product thành công' });
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: 'Không tìm thấy Product' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });

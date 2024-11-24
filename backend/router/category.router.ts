@@ -10,10 +10,10 @@ import {
 const router = express.Router();
 
 // Định nghĩa các route cho Category
-router.post('/categories', createCategory); // Tạo category mới
-router.get('/categories', getCategories); // Lấy danh sách category
-router.get('/categories/:id', getCategoryById); // Lấy category theo ID
-router.put('/categories/:id', updateCategory); // Cập nhật category
-router.delete('/categories/:id', deleteCategory); // Xóa category
+router.post('/create', createCategory); // Tạo category mới
+router.get('/get', getCategories); // Lấy danh sách category
+router.get('/get/:id', getCategoryById); // Lấy category theo ID
+router.put('/update/:id', updateCategory); // Cập nhật category
+router.delete('/delete/:id', deleteCategory); // Xóa category
 
 export default router;

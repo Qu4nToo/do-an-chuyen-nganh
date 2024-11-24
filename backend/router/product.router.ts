@@ -10,10 +10,10 @@ import {
 const router = express.Router();
 
 // Định nghĩa các route cho Product
-router.post('/products', createProduct); // Tạo product mới
-router.get('/products', getProducts); // Lấy danh sách product
-router.get('/products/:id', getProductById); // Lấy product theo ID
-router.put('/products/:id', updateProduct); // Cập nhật product
-router.delete('/products/:id', deleteProduct); // Xóa product
+router.post('/create', createProduct); // Tạo Product mới
+router.get('/get', getProducts); // Lấy danh sách Product
+router.get('/get/:id', getProductById); // Lấy Product theo ID
+router.put('/update/:id', updateProduct); // Cập nhật Product
+router.delete('/delete/:id', deleteProduct); // Xóa Product
 
 export default router;

@@ -66,7 +66,7 @@ export const getOrderDetailById = async (req, res) => {
     });
 
     if (!orderDetail) {
-      return res.status(404).json({ error: 'OrderDetail not found' });
+      return res.status(404).json({ error: 'không tìm thấy OrderDetail' });
     }
 
     return res.status(200).json(orderDetail);

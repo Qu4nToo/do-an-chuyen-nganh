@@ -9,7 +9,7 @@ export const createRole = async (req, res) => {
 
     // Kiểm tra input
     if (!roleName || !RoleName[roleName]) {
-      return res.status(400).json({ error: 'Invalid role name' });
+      return res.status(400).json({ error: 'Role name không hợp lệ' });
     }
 
     // Tạo role mới
@@ -53,7 +53,7 @@ export const getRoleById = async (req, res) => {
     });
 
     if (!role) {
-      return res.status(404).json({ error: 'Role not found' });
+      return res.status(404).json({ error: 'không tìm thấy Role' });
     }
 
     return res.status(200).json(role);
@@ -70,7 +70,7 @@ export const updateRole = async (req, res) => {
 
     // Kiểm tra nếu roleName không hợp lệ
     if (roleName && !RoleName[roleName]) {
-      return res.status(400).json({ error: 'Invalid role name' });
+      return res.status(400).json({ error: 'tên role không hợp lệ' });
     }
 
     const updatedRole = await prisma.role.update({
@@ -83,7 +83,7 @@ export const updateRole = async (req, res) => {
     return res.status(200).json(updatedRole);
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Role not found' });
+      return res.status(404).json({ error: 'không tìm thấy Role' });
     }
     return res.status(500).json({ error: error.message });
   }
@@ -98,10 +98,10 @@ export const deleteRole = async (req, res) => {
       where: { id },
     });
 
-    return res.status(200).json({ message: 'Role deleted successfully' });
+    return res.status(200).json({ message: 'Xóa Role thành công' });
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Role not found' });
+      return res.status(404).json({ error: 'không tìm thấy Role' });
     }
     return res.status(500).json({ error: error.message });
   }

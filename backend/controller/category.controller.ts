@@ -9,7 +9,7 @@ export const createCategory = async (req, res) => {
 
     // Kiểm tra trường dữ liệu
     if (!categoryName) {
-      return res.status(400).json({ error: 'Category name is required' });
+      return res.status(400).json({ error: 'tên Category là bắt buộc' });
     }
 
     // Tạo category mới
@@ -55,7 +55,7 @@ export const getCategoryById = async (req, res) => {
     });
 
     if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: 'Không tìm thấy Category' });
     }
 
     return res.status(200).json(category);
@@ -81,7 +81,7 @@ export const updateCategory = async (req, res) => {
     return res.status(200).json(updatedCategory);
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: 'Không tìm thấy Category' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -98,10 +98,10 @@ export const deleteCategory = async (req, res) => {
       where: { id },
     });
 
-    return res.status(200).json({ message: 'Category deleted successfully' });
+    return res.status(200).json({ message: 'Xóa Category thành công' });
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: 'Không tìm thấy Category' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });
