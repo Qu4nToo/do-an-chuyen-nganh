@@ -9,11 +9,11 @@ import {
 
 const router = express.Router();
 
-// Định nghĩa các route cho Users
-router.post('/users', createUser); // Tạo user mới
-router.get('/users', getUsers); // Lấy danh sách user
-router.get('/users/:id', getUserById); // Lấy user theo ID
-router.put('/users/:id', updateUser); // Cập nhật user
-router.delete('/users/:id', deleteUser); // Xóa user
+// Định nghĩa các route cho User
+router.post('/create', createUser); // Tạo User mới
+router.get('/get', getUsers); // Lấy danh sách User
+router.get('/get/:id', getUserById); // Lấy User theo ID
+router.put('/update/:id', updateUser); // Cập nhật User
+router.delete('/delete/:id', deleteUser); // Xóa User
 
 export default router;

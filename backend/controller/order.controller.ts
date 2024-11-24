@@ -5,12 +5,19 @@ const prisma = new PrismaClient();
 // Tạo đơn hàng mới
 export const createOrder = async (req, res) => {
   try {
-    const { userID, status, } = req.body;
-
+    const { userID, status, address, } = req.body;
+    if (!userID || !status || !address) {
+      return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
+    }
+    if (!status || !OrderStatus[status]) {
+      return res.status(400).json({ error: 'status không hợp lệ' });
+    }
     const newOrder = await prisma.order.create({
       data: {
         userID,
-        status: status || OrderStatus.PENDING,  // Nếu không có status thì mặc định là PENDING
+        address,
+        status: OrderStatus[status],
+        // status: status || OrderStatus.Pending, 
       },
     });
 
@@ -54,7 +61,7 @@ export const getOrderById = async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
+      return res.status(404).json({ error: 'Không tim thấy Order' });
     }
 
     return res.status(200).json(order);
@@ -68,21 +75,21 @@ export const getOrderById = async (req, res) => {
 export const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, address } = req.body;
 
     if (!Object.values(OrderStatus).includes(status)) {
-      return res.status(400).json({ error: 'Invalid order status' });
+      return res.status(400).json({ error: 'Status không hợp hệ' });
     }
 
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: { status },
+      data: { status, address },
     });
 
     return res.status(200).json(updatedOrder);
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Order not found' });
+      return res.status(404).json({ error: 'Không tim thấy Order' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -98,10 +105,10 @@ export const deleteOrder = async (req, res) => {
       where: { id },
     });
 
-    return res.status(200).json({ message: 'Order deleted successfully' });
+    return res.status(200).json({ message: 'Xóa Order thành công' });
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Order not found' });
+      return res.status(404).json({ error: 'Không tim thấy Order' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });

@@ -7,7 +7,7 @@ export const createCoupon = async (req, res) => {
       const { endDate, startDate, discountValue, couponCode, orderID } = req.body;
   
       // Kiểm tra các trường bắt buộc
-      if (!startDate || !endDate || !discountValue || !couponCode || !orderID) {
+      if (!startDate || !endDate || !discountValue || !orderID) {
         return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
       }
   
@@ -43,7 +43,6 @@ export const createCoupon = async (req, res) => {
           order: true, // Bao gồm thông tin order liên quan
         },
       });
-  
       return res.status(200).json(coupons);
     } catch (error) {
       console.error(error);
@@ -64,7 +63,7 @@ export const createCoupon = async (req, res) => {
       });
   
       if (!coupon) {
-        return res.status(404).json({ error: 'Coupon not found' });
+        return res.status(404).json({ error: 'không tìm thấy Coupon' });
       }
   
       return res.status(200).json(coupon);
@@ -99,7 +98,7 @@ export const createCoupon = async (req, res) => {
       return res.status(200).json(updatedCoupon);
     } catch (error) {
       if (error.code === 'P2025') {
-        return res.status(404).json({ error: 'Coupon not found' });
+        return res.status(404).json({ error: 'không tìm thấy Coupon' });
       }
       console.error(error);
       return res.status(500).json({ error: error.message });
@@ -115,10 +114,10 @@ export const createCoupon = async (req, res) => {
         where: { id },
       });
   
-      return res.status(200).json({ message: 'Coupon deleted successfully' });
+      return res.status(200).json({ message: 'xóa coupon thành công' });
     } catch (error) {
       if (error.code === 'P2025') {
-        return res.status(404).json({ error: 'Coupon not found' });
+        return res.status(404).json({ error: 'Không ' });
       }
       console.error(error);
       return res.status(500).json({ error: error.message });

@@ -10,10 +10,10 @@ import {
 const router = express.Router();
 
 // Định nghĩa các route cho OrderDetail
-router.post('/order-details', createOrderDetail); // Tạo OrderDetail mới
-router.get('/order-details', getOrderDetails); // Lấy danh sách OrderDetails
-router.get('/order-details/:orderID/:productID', getOrderDetailById); // Lấy OrderDetail theo ID
-router.put('/order-details/:orderID/:productID', updateOrderDetail); // Cập nhật OrderDetail
-router.delete('/order-details/:orderID/:productID', deleteOrderDetail); // Xóa OrderDetail
+router.post('/create', createOrderDetail); // Tạo OrderDetail mới
+router.get('/get', getOrderDetails); // Lấy danh sách OrderDetail
+router.get('/get/:orderID/:productID', getOrderDetailById); // Lấy OrderDetail theo ID
+router.put('/update/:orderID/:productID', updateOrderDetail);
+router.delete('/delete/:orderID/:productID', deleteOrderDetail); // Xóa OrderDetail
 
 export default router;

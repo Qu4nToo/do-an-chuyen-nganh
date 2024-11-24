@@ -10,10 +10,10 @@ import {
 const router = express.Router();
 
 // Định nghĩa các route cho Coupon
-router.post('/coupons', createCoupon); // Tạo coupon mới
-router.get('/coupons', getCoupons); // Lấy danh sách coupon
-router.get('/coupons/:id', getCouponById); // Lấy coupon theo ID
-router.put('/coupons/:id', updateCoupon); // Cập nhật coupon
-router.delete('/coupons/:id', deleteCoupon); // Xóa coupon
+router.post('/create', createCoupon); // Tạo Coupon mới
+router.get('/get', getCoupons); // Lấy danh sách Coupon
+router.get('/get/:id', getCouponById); // Lấy Coupon theo ID
+router.put('/update/:id', updateCoupon); // Cập nhật Coupon
+router.delete('/delete/:id', deleteCoupon); // Xóa Coupon
 
 export default router;

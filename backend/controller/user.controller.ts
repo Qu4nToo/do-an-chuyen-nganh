@@ -1,21 +1,19 @@
 import { PrismaClient } from '@prisma/client';
-
+import validator from 'validator';
 const prisma = new PrismaClient();
 
 // Tạo người dùng mới
 export const createUser = async (req, res) => {
   try {
-    const { firstName, lastName, passWord, phoneNumber, address, email, roleID } = req.body;
+    const { firstName, lastName, passWord, email, roleID } = req.body;
 
     // Kiểm tra nếu thiếu thông tin
-    if (!firstName || !lastName || !passWord || !phoneNumber || !address || !email || !roleID) {
+    if (!firstName || !lastName || !passWord || !email || !roleID) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
 
-    // Kiểm tra định dạng phoneNumber và email
-    const phoneRegex = /^[0-9]{10}$/; // Đảm bảo phoneNumber chỉ bao gồm 10 chữ số
-    if (!phoneRegex.test(phoneNumber)) {
-      return res.status(400).json({ error: 'Số điện thoại phải gồm 10 chữ số' });
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Địa chỉ email không hợp lệ' });
     }
 
     const newUser = await prisma.user.create({
@@ -23,8 +21,6 @@ export const createUser = async (req, res) => {
         firstName,
         lastName,
         passWord,
-        phoneNumber,
-        address,
         email,
         roleID,
       },
@@ -68,7 +64,7 @@ export const getUserById = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Không tim thấy User' });
     }
 
     return res.status(200).json(user);
@@ -82,22 +78,16 @@ export const getUserById = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, passWord, phoneNumber, address, email, roleID } = req.body;
-
-    // Kiểm tra định dạng phoneNumber
-    const phoneRegex = /^[0-9]{10}$/;
-    if (phoneNumber && !phoneRegex.test(phoneNumber)) {
-      return res.status(400).json({ error: 'Số điện thoại phải gồm 10 chữ số' });
+    const { firstName, lastName, passWord, email, roleID } = req.body;
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Địa chỉ email không hợp lệ' });
     }
-
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
         firstName,
         lastName,
         passWord,
-        phoneNumber,
-        address,
         email,
         roleID,
       },
@@ -106,7 +96,7 @@ export const updateUser = async (req, res) => {
     return res.status(200).json(updatedUser);
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Không tim thấy User' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -122,10 +112,10 @@ export const deleteUser = async (req, res) => {
       where: { id },
     });
 
-    return res.status(200).json({ message: 'User deleted successfully' });
+    return res.status(200).json({ message: 'Xóa User thành công' });
   } catch (error) {
     if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Không tim thấy User' });
     }
     console.error(error);
     return res.status(500).json({ error: error.message });
