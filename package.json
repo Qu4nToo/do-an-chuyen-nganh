@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "react-hook-form": "^7.53.2"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.12"
-  }
-}
