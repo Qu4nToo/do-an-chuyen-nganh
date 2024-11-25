@@ -63,59 +63,170 @@ import axios from "axios"
 import Admin from "../page"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
+import { Description } from "@radix-ui/react-toast"
 
 export default function Products() {
+    // interface Product{
+    //     id: string,
+    //     title: string,
+    //     description: string,
+    //     price: number,
+    //     image: string,
+    //     categoryID: string,
+    //     category: {
+    //         id: string,
+    //         categoryName: string,
+    //     },
+    //     orderDetails: [],
+    // }
     const [products, setProducts] = useState([]);
+    const [product, setProduct] = useState<any>([]);
+    const [categories, setCategories] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const { toast } = useToast()
-
+    const [showAlertEdit, setShowAlertEdit] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<any>([]);
+    const { toast } = useToast();
+    let a;
     const [newProduct, setNewProduct] = useState({
+        image: '',
+        categoryID: '',
         title: '',
-        author: '',
-        price: '',
-        category: ''
+        price: 0,
+        description: ''
     });
-    
-    const handleInputChange=()=> {
-        setNewProduct({
-            ...newProduct,
-        });
+    const handleInputChange2 = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { id, value } = e.target;
+
+        // Kiểm tra xem có phải là trường categoryName không
+        if (id === "id") {
+            setNewProduct((prev) => ({
+                ...prev,
+            }));
+        } else {
+            // Cập nhật các trường còn lại trong newProduct
+            setNewProduct((prev) => ({
+                ...prev,
+                [id]: value,
+            }));
+        }
+        console.log(newProduct);
     };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        // Kiểm tra xem có phải là trường categoryName không
+        if (id === "id") {
+            setNewProduct((prev) => ({
+                ...prev,
+            }));
+        } else {
+            // Cập nhật các trường còn lại trong newProduct
+            setNewProduct((prev) => ({
+                ...prev,
+                [id]: value,
+            }));
+        }
+        console.log(newProduct);
+    };
+    // const handleInputChange = () => {
+    //     setNewProduct({
+    //         ...newProduct,
+    //     });
+    // };
+
     useEffect(() => {
-        axios.get("http://localhost:5000/api/products")
+        axios.get("http://localhost:5000/api/admin/product/get")
             .then(products => setProducts(products.data))
             .catch(err => console.log(err))
+        axios.get("http://localhost:5000/api/admin/category/get")
+            .then(categories => setCategories(categories.data))
+            .catch(err => console.log(err))
     }, []);
-
+    // const handleToggleMenuClick = (product: React.SetStateAction<null>)=>{
+    //     setSelectedProduct(product);
+    //     a = selectedProduct;
+    // }
     const handleDeleteClick = (product: React.SetStateAction<null>) => {
         setSelectedProduct(product);
         setShowAlert(true);
     }
-
+    const handleEditClick = (product: any) => {
+        setProduct(product);
+        setNewProduct(product);
+        setShowAlertEdit(true);
+    }
+    const handleAlertEditClose = () => {
+        setShowAlertEdit(false);
+        setSelectedProduct(null);
+    }
     const handleAlertClose = () => {
         setShowAlert(false);
         setSelectedProduct(null);
     }
+    const handleConfirmEdit = () => {
+        axios.put(`http://localhost:5000/api/admin/product/update/${product.id}`,newProduct)
+        .then(() => {
+            toast({
+                title: "Product Edit",
+                description: `Product has been edit.`,
+            });
+            // Reload the products or update state after deletion
+            axios.get("http://localhost:5000/api/admin/product/get")
+                .then((response) => setProducts(response.data))
+                .catch((err) => console.error("Error fetching products:", err));
 
-    const handleConfirmDelete = () => {
-        toast({
-            title: "Product Deleted",
-            description: `Product has been deleted.`,
+            setShowAlert(false);  // Close the alert dialog
+        })
+        .catch((err) => {
+            console.error("Error deleting product:", err);
+            toast({
+                title: "Edit Failed",
+                description: `There was an error edit the product.`,
+                variant: "destructive",
+            });
         });
-        setShowAlert(false);
     }
+    const handleConfirmDelete = () => {
+        // Make sure product.id is passed dynamically in the URL
+        if (selectedProduct) {
+            axios.delete(`http://localhost:5000/api/admin/product/delete/${selectedProduct.id}`)
+                .then(() => {
+                    toast({
+                        title: "Product Deleted",
+                        description: `Product has been deleted.`,
+                    });
+                    // Reload the products or update state after deletion
+                    axios.get("http://localhost:5000/api/admin/product/get")
+                        .then((response) => setProducts(response.data))
+                        .catch((err) => console.error("Error fetching products:", err));
+
+                    setShowAlert(false);  // Close the alert dialog
+                })
+                .catch((err) => {
+                    console.error("Error deleting product:", err);
+                    toast({
+                        title: "Delete Failed",
+                        description: `There was an error deleting the product.`,
+                        variant: "destructive",
+                    });
+                });
+        }
+    };
     const handleCreateProduct = () => {
-        axios.post("http://localhost:5000/api/products", newProduct)
+        console.log(newProduct);
+        axios.post("http://localhost:5000/api/admin/product/create", newProduct)
             .then(() => {
-                // Load lại danh sách sản phẩm sau khi thêm thành công
-                axios.get("http://localhost:5000/api/products")
-                    .then(products => setProducts(products.data))
-                    .catch(err => console.log(err));
+                toast({
+                    title: "Product Created",
+                    description: "New product has been added successfully.",
+                });
+                // Load lại danh sách sản phẩm
+                axios.get("http://localhost:5000/api/admin/product/get")
+                    .then((response) => setProducts(response.data))
+                    .catch((err) => console.error("Error fetching products:", err));
             })
-            .catch(err => console.log(err));
+            .catch((err) => console.error("Error creating product:", err));
     };
     return (
         <Admin>
@@ -162,42 +273,53 @@ export default function Products() {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
-                                    <DialogTitle>Add New Artwork</DialogTitle>
+                                    <DialogTitle>Add New Product</DialogTitle>
                                     <DialogDescription>
-                                        Add new artwork to store catalog.
+                                        Add new product to store catalog.
                                     </DialogDescription>
                                 </DialogHeader>
-                                <form action="/product.controller.js" method="post">
                                 <div className="grid gap-4 py-4">
                                     <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="title" className="text-right col-span-2">
-                                            Artwork Title
+                                        <Label htmlFor="image" className="text-right col-span-2">
+                                            Image
                                         </Label>
-                                        <Input  onChange={handleInputChange} id="title" type="text" className="col-span-4" />
+                                        <Input onChange={handleInputChange} id="image" type="text" className="col-span-4" />
                                     </div>
-                                    <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="size" className="text-right col-span-2">
-                                            Author
+                                    {/* <div className="grid grid-cols-6 items-center gap-4">
+                                        <Label htmlFor="category" className="text-right col-span-2">
+                                            Title
                                         </Label>
-                                        <Input  onChange={handleInputChange} id="author" type="text" className="col-span-4" />
+                                        <Input onChange={handleInputChange} id="categoryID" type="text" className="col-span-4" />
+                                    </div> */}
+                                    
+                                        <div className="grid grid-cols-6 items-center gap-4">
+                                            <Label htmlFor="categoryID" className="text-right col-span-2">
+                                                Category
+                                            </Label>
+                                            <select
+                                                id="categoryID"  // Đây là ID cho dropdown
+                                                onChange={handleInputChange2}  // Gọi handleInputChange khi có sự thay đổi
+                                                className="col-span-4"
+                                            >
+                                                <option value="">Select Category</option>
+                                                {categories.map((category: any) => (
+                                                <>
+                                                    <option key={category.id} value={category.id}>{category.categoryName}</option></>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    
+                                    <div className="grid grid-cols-6 items-center gap-4">
+                                        <Label htmlFor="title" className="text-right col-span-2">
+                                            Product name
+                                        </Label>
+                                        <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" />
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
                                         <Label htmlFor="price" className="text-right col-span-2">
                                             Price
                                         </Label>
-                                        <Input  onChange={handleInputChange} id="price" type="text" className="col-span-4" />
-                                    </div>
-                                    <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="quantity" className="text-right col-span-2">
-                                            Thumbnail
-                                        </Label>
-                                        <Input  onChange={handleInputChange} id="quantity" type="text" className="col-span-4" />
-                                    </div>
-                                    <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="category" className="text-right col-span-2">
-                                            Category
-                                        </Label>
-                                        <Input  onChange={handleInputChange} id="category" type="text" className="col-span-4" />
+                                        <Input onChange={handleInputChange} id="price" type="number" className="col-span-4" />
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
                                         <Label htmlFor="description" className="text-right col-span-2">
@@ -206,18 +328,9 @@ export default function Products() {
                                         <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" />
                                     </div>
                                 </div>
-                                </form>
                                 <DialogFooter>
-                                    <Button type="submit" onClick={(handleCreateProduct) => {
-                                        console.log("save");
-                                        toast({
-                                            title: "Scheduled: Catch up ",
-                                            description: "Friday, February 10, 2023 at 5:57 PM",
-                                            action: (
-                                                <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
-                                            ),
-                                        })
-                                    }}>Save changes
+                                    <Button type="button" onClick={handleCreateProduct}>
+                                        Save changes
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -236,17 +349,12 @@ export default function Products() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="hidden w-[100px] sm:table-cell">
-                                            <span className="sr-only">Image</span>
-                                        </TableHead>
+                                        <TableHead>Image</TableHead>
+                                        <TableHead>Title</TableHead>
                                         <TableHead>Product Name</TableHead>
                                         <TableHead>Price</TableHead>
-                                        <TableHead className="hidden md:table-cell">Quantity</TableHead>
                                         <TableHead className="hidden md:table-cell">
-                                            Created at
-                                        </TableHead>
-                                        <TableHead className="hidden md:table-cell">
-                                            Updated at
+                                            Decsription
                                         </TableHead>
                                         <TableHead>
                                             <span className="sr-only">Actions</span>
@@ -255,32 +363,25 @@ export default function Products() {
                                 </TableHeader>
                                 <TableBody>
                                     {products.map((product: any) => (
-                                        <TableRow key={product._id}>
+                                        <TableRow key={product.id}>
                                             <TableCell className="hidden sm:table-cell">
                                                 <Image
                                                     alt="Product image"
                                                     className="aspect-square rounded-md object-cover"
                                                     height="32"
-                                                    src="/next.svg"
+                                                    src={product.image}
                                                     width="32"
                                                 />
                                             </TableCell>
                                             <TableCell className="font-medium">
-                                                
-                                                {product.title}
+                                                {product.category.categoryName}
                                             </TableCell>
                                             <TableCell className="font-medium">
-                                                {product.category}
+                                                {product.title}
                                             </TableCell>
                                             <TableCell>{product.price}</TableCell>
                                             <TableCell className="hidden md:table-cell">
-                                                {product.quantity}
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {product.createdAt}
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {product.updatedAt}
+                                                {product.description}
                                             </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
@@ -289,6 +390,7 @@ export default function Products() {
                                                             aria-haspopup="true"
                                                             size="icon"
                                                             variant="ghost"
+                                                        // onClick={() => handleToggleMenuClick(product)}
                                                         >
                                                             <MoreHorizontal className="h-4 w-4" />
                                                             <span className="sr-only">Toggle menu</span>
@@ -296,7 +398,7 @@ export default function Products() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleEditClick(product)}>Edit</DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleDeleteClick(product)}>Delete</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -332,6 +434,62 @@ export default function Products() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </Admin>
+            <AlertDialog open={showAlertEdit} onOpenChange={setShowAlertEdit}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Edit product</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-6 items-center gap-4">
+                            <Label htmlFor="image" className="text-right col-span-2">
+                                Image
+                            </Label>
+                            <Input onChange={handleInputChange} id="image" type="text" className="col-span-4" defaultValue={product.image} />
+                        </div>
+
+                        <div className="grid grid-cols-6 items-center gap-4">
+                            <Label htmlFor="categoryID" className="text-right col-span-2">
+                                Category
+                            </Label>
+                            <select
+                                id="categoryID"  // Đây là ID cho dropdown
+                                onChange={handleInputChange2}  // Gọi handleInputChange khi có sự thay đổi
+                                className="col-span-4"
+                            >
+                                <option>{product.category?.categoryName || "No Category"}</option>
+                                {categories.filter((category: any)=> category.id != product.categoryID).map((category: any) => (
+                                    <option key = { category.id } value = { category.id } > { category.categoryName }</option>
+                                ))}
+                            </select>
+                    </div>
+
+                    <div className="grid grid-cols-6 items-center gap-4">
+                        <Label htmlFor="title" className="text-right col-span-2">
+                            Product name
+                        </Label>
+                        <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" defaultValue={product.title} />
+                    </div>
+                    <div className="grid grid-cols-6 items-center gap-4">
+                        <Label htmlFor="price" className="text-right col-span-2">
+                            Price
+                        </Label>
+                        <Input onChange={handleInputChange} id="price" type="number" className="col-span-4" defaultValue={product.price} />
+                    </div>
+                    <div className="grid grid-cols-6 items-center gap-4">
+                        <Label htmlFor="description" className="text-right col-span-2">
+                            Description
+                        </Label>
+                        <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" defaultValue={product.description} />
+                    </div>
+                </div>
+                <AlertDialogFooter>
+                    <AlertDialogCancel onClick={handleAlertEditClose}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleConfirmEdit}>
+                        Confirm
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        </Admin >
     )
 }
