@@ -28,11 +28,9 @@ import {
 } from "@/components/ui/card"
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -64,7 +62,8 @@ import Admin from "../page"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
-import { Description } from "@radix-ui/react-toast"
+import { Toaster } from "@/components/ui/toaster"
+
 
 export default function Products() {
     // interface Product{
@@ -86,6 +85,7 @@ export default function Products() {
     const [showAlert, setShowAlert] = useState(false);
     const [showAlertEdit, setShowAlertEdit] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<any>([]);
+    const [isDialogOpen, setDialogOpen] = useState(false);
     const { toast } = useToast();
     let a;
     const [newProduct, setNewProduct] = useState({
@@ -165,27 +165,27 @@ export default function Products() {
         setSelectedProduct(null);
     }
     const handleConfirmEdit = () => {
-        axios.put(`http://localhost:5000/api/admin/product/update/${product.id}`,newProduct)
-        .then(() => {
-            toast({
-                title: "Product Edit",
-                description: `Product has been edit.`,
-            });
-            // Reload the products or update state after deletion
-            axios.get("http://localhost:5000/api/admin/product/get")
-                .then((response) => setProducts(response.data))
-                .catch((err) => console.error("Error fetching products:", err));
+        axios.put(`http://localhost:5000/api/admin/product/update/${product.id}`, newProduct)
+            .then(() => {
+                toast({
+                    title: "Product Edit",
+                    description: `Product has been edit.`,
+                });
+                // Reload the products or update state after deletion
+                axios.get("http://localhost:5000/api/admin/product/get")
+                    .then((response) => setProducts(response.data))
+                    .catch((err) => console.error("Error fetching products:", err));
 
-            setShowAlert(false);  // Close the alert dialog
-        })
-        .catch((err) => {
-            console.error("Error deleting product:", err);
-            toast({
-                title: "Edit Failed",
-                description: `There was an error edit the product.`,
-                variant: "destructive",
+                setShowAlert(false);  // Close the alert dialog
+            })
+            .catch((err) => {
+                console.error("Error deleting product:", err);
+                toast({
+                    title: "Edit Failed",
+                    description: `There was an error edit the product.`,
+                    variant: "destructive",
+                });
             });
-        });
     }
     const handleConfirmDelete = () => {
         // Make sure product.id is passed dynamically in the URL
@@ -225,6 +225,14 @@ export default function Products() {
                 axios.get("http://localhost:5000/api/admin/product/get")
                     .then((response) => setProducts(response.data))
                     .catch((err) => console.error("Error fetching products:", err));
+                setNewProduct({
+                    image: '',
+                    categoryID: '',
+                    title: '',
+                    price: 0,
+                    description: ''
+                });
+                setDialogOpen(false);
             })
             .catch((err) => console.error("Error creating product:", err));
     };
@@ -234,14 +242,9 @@ export default function Products() {
                 <div className="flex items-center">
                     <TabsList>
                         <TabsTrigger value="all">All</TabsTrigger>
-                        <TabsTrigger value="active">Active</TabsTrigger>
-                        <TabsTrigger value="draft">Draft</TabsTrigger>
-                        <TabsTrigger value="archived" className="hidden sm:flex">
-                            Archived
-                        </TabsTrigger>
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
-                        <DropdownMenu>
+                        {/* <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-7 gap-1">
                                     <ListFilter className="h-3.5 w-3.5" />
@@ -261,8 +264,8 @@ export default function Products() {
                                     Archived
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Dialog>
+                        </DropdownMenu> */}
+                        <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button size="sm" className="h-7 gap-1">
                                     <PlusCircle className="h-3.5 w-3.5" />
@@ -291,24 +294,24 @@ export default function Products() {
                                         </Label>
                                         <Input onChange={handleInputChange} id="categoryID" type="text" className="col-span-4" />
                                     </div> */}
-                                    
-                                        <div className="grid grid-cols-6 items-center gap-4">
-                                            <Label htmlFor="categoryID" className="text-right col-span-2">
-                                                Category
-                                            </Label>
-                                            <select
-                                                id="categoryID"  // Đây là ID cho dropdown
-                                                onChange={handleInputChange2}  // Gọi handleInputChange khi có sự thay đổi
-                                                className="col-span-4"
-                                            >
-                                                <option value="">Select Category</option>
-                                                {categories.map((category: any) => (
+
+                                    <div className="grid grid-cols-6 items-center gap-4">
+                                        <Label htmlFor="categoryID" className="text-right col-span-2">
+                                            Category
+                                        </Label>
+                                        <select
+                                            id="categoryID"  // Đây là ID cho dropdown
+                                            onChange={handleInputChange2}  // Gọi handleInputChange khi có sự thay đổi
+                                            className="col-span-4"
+                                        >
+                                            <option value="">Select Category</option>
+                                            {categories.map((category: any) => (
                                                 <>
                                                     <option key={category.id} value={category.id}>{category.categoryName}</option></>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    
+                                            ))}
+                                        </select>
+                                    </div>
+
                                     <div className="grid grid-cols-6 items-center gap-4">
                                         <Label htmlFor="title" className="text-right col-span-2">
                                             Product name
@@ -330,7 +333,7 @@ export default function Products() {
                                 </div>
                                 <DialogFooter>
                                     <Button type="button" onClick={handleCreateProduct}>
-                                        Save changes
+                                        Confirm
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -457,39 +460,40 @@ export default function Products() {
                                 className="col-span-4"
                             >
                                 <option>{product.category?.categoryName || "No Category"}</option>
-                                {categories.filter((category: any)=> category.id != product.categoryID).map((category: any) => (
-                                    <option key = { category.id } value = { category.id } > { category.categoryName }</option>
+                                {categories.filter((category: any) => category.id != product.categoryID).map((category: any) => (
+                                    <option key={category.id} value={category.id} > {category.categoryName}</option>
                                 ))}
                             </select>
-                    </div>
+                        </div>
 
-                    <div className="grid grid-cols-6 items-center gap-4">
-                        <Label htmlFor="title" className="text-right col-span-2">
-                            Product name
-                        </Label>
-                        <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" defaultValue={product.title} />
+                        <div className="grid grid-cols-6 items-center gap-4">
+                            <Label htmlFor="title" className="text-right col-span-2">
+                                Product name
+                            </Label>
+                            <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" defaultValue={product.title} />
+                        </div>
+                        <div className="grid grid-cols-6 items-center gap-4">
+                            <Label htmlFor="price" className="text-right col-span-2">
+                                Price
+                            </Label>
+                            <Input onChange={handleInputChange} id="price" type="number" className="col-span-4" defaultValue={product.price} />
+                        </div>
+                        <div className="grid grid-cols-6 items-center gap-4">
+                            <Label htmlFor="description" className="text-right col-span-2">
+                                Description
+                            </Label>
+                            <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" defaultValue={product.description} />
+                        </div>
                     </div>
-                    <div className="grid grid-cols-6 items-center gap-4">
-                        <Label htmlFor="price" className="text-right col-span-2">
-                            Price
-                        </Label>
-                        <Input onChange={handleInputChange} id="price" type="number" className="col-span-4" defaultValue={product.price} />
-                    </div>
-                    <div className="grid grid-cols-6 items-center gap-4">
-                        <Label htmlFor="description" className="text-right col-span-2">
-                            Description
-                        </Label>
-                        <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" defaultValue={product.description} />
-                    </div>
-                </div>
-                <AlertDialogFooter>
-                    <AlertDialogCancel onClick={handleAlertEditClose}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleConfirmEdit}>
-                        Confirm
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={handleAlertEditClose}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmEdit}>
+                            Confirm
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <Toaster />
         </Admin >
     )
 }

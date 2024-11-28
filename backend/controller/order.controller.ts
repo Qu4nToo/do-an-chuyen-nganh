@@ -5,12 +5,16 @@ const prisma = new PrismaClient();
 // Tạo đơn hàng mới
 export const createOrder = async (req, res) => {
   try {
-    const { userID, status, address, } = req.body;
-    if (!userID || !status || !address) {
+    const { userID, status, address, phone, notice, } = req.body;
+    if (!userID || !status || !address || !phone|| !notice) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
     if (!status || !OrderStatus[status]) {
       return res.status(400).json({ error: 'status không hợp lệ' });
+    }
+    const phoneRegex = /^[0-9]+$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ error: 'Phone number must contain only digits' });
     }
     const newOrder = await prisma.order.create({
       data: {
@@ -18,6 +22,8 @@ export const createOrder = async (req, res) => {
         address,
         status: OrderStatus[status],
         // status: status || OrderStatus.Pending, 
+        phone,
+        notice,
       },
     });
 
@@ -75,15 +81,20 @@ export const getOrderById = async (req, res) => {
 export const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, address } = req.body;
-
+    const {userID, status, address, phone, notice } = req.body;
+    if (!userID || !status || !address || !phone|| !notice) {
+      return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
+    }
     if (!Object.values(OrderStatus).includes(status)) {
       return res.status(400).json({ error: 'Status không hợp hệ' });
     }
-
+    const phoneRegex = /^[0-9]+$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ error: 'Phone number must contain only digits' });
+    }
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: { status, address },
+      data: { userID, status, address, phone, notice },
     });
 
     return res.status(200).json(updatedOrder);

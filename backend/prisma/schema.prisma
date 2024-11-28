@@ -15,8 +15,7 @@ datasource db {
 
 model User {
   id        String  @id @default(uuid()) @db.Char(36)
-  firstName String @db.VarChar(30)
-  lastName  String @db.VarChar(30)
+  Name  String @db.VarChar(30)
   passWord  String @db.VarChar(30)
   email     String @unique @db.VarChar(30)
   roleID    String  @db.Char(36)
@@ -44,8 +43,10 @@ enum OrderStatus {
 
 model Order {
   id           String        @id @default(uuid()) @db.Char(36)
-  status       OrderStatus?  @default(Pending)
-  address      String?       @db.VarChar(30)
+  status       OrderStatus  @default(Pending)
+  address      String       @db.VarChar(30)
+  phone        String       @db.Char(10)
+  notice       String       @db.VarChar(50)
   userID       String        @db.Char(36)
   user         User          @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: NoAction)
   coupons      Coupon[]
@@ -56,7 +57,7 @@ model Coupon {
   id            String    @id @default(uuid()) @db.Char(36)
   endDate       DateTime 
   startDate     DateTime 
-  discountValue Int?
+  discountValue Int
   couponCode    String   @unique @default(uuid()) @db.Char(36)
   orderID       String    @db.Char(36)
   order         Order     @relation(fields: [orderID], references: [id], onDelete: Cascade, onUpdate: NoAction)
