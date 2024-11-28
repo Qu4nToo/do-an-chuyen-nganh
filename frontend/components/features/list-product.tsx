@@ -1,149 +1,82 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "../ui/button";
-interface Product {
-  id: number;
-  img: string;
-  title: string;
-  name: string;
-  price: string;
-}
 
-const products: Product[] = [
-  {
-    id: 1,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 2,
-    img: "/burger.png",
-    title: "Pizza",
-    name: "Fried Chicken Pizza",
-    price: "200000",
-  },
-  {
-    id: 3,
-    img: "/burger.png",
-    title: "Fries",
-    name: "Cheese Fries",
-    price: "100000",
-  },
-  {
-    id: 4,
-    img: "/burger.png",
-    title: "Chicken",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 5,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 6,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 7,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 8,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 9,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 10,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-];
-const categories = ["Hamburger", "Pizza", "Fries", "Chicken", "Hot Dog"];
+
+
 interface MenuItem {
-  id: number;
-  img: string;
+  id: string,
   title: string;
-  current: boolean;
-}
-const menu: MenuItem[] =[
-  {
-    id: 1,
-    img: "/btnBurger.png",
-    title: "Hamburger",
-    current: true,
-  },
-  {
-    id: 2,
-    img: "/btnFries.png",
-    title: "Fries",
-    current: false,
-  },
-  {
-    id: 3,
-    img: "/btnPizza.png",
-    title: "Pizza",
-    current: false,
-  },
-  {
-    id: 4,
-    img: "/btnChicken.png",
-    title: "Chicken",
-    current: false,
-  },
-  {
-    id: 5,
-    img: "/btnHotDog.png",
-    title: "Hot Dog",
-    current: false,
-  },
-];
+  current: boolean
+};
+
 export function ListProduct() {
-  const [selectedTitle, setSelectedTitle] = useState<string>("Hamburger"); // Mặc định là Hamburger
-  const [Menu, setMenu] = useState<MenuItem[]>(menu);
-  // Hàm xử lý sự kiện onClick
+
+
+  const [selectedTitle, setSelectedTitle] = useState<string>("ALL");
+  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [menu, setMenu] = useState<MenuItem[]>([]);
+
+  // Fetch dữ liệu khi component được mount
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/admin/product/get")
+      .then((response) => setProducts(response.data))
+      .catch((err) => console.error("Error fetching products:", err));
+
+    axios
+      .get("http://localhost:5000/api/admin/category/get")
+      .then((response) => {
+        setCategories(response.data);
+
+        // Khởi tạo menu từ danh mục sau khi tải xong
+        const initialMenu: MenuItem[] = [
+          {
+            id: "1",
+            title: "ALL",
+            current: true, // Mặc định chọn "ALL"
+          },
+          ...response.data.map((category: any) => ({
+            id: category.id,
+            title: category.categoryName,
+            current: false,
+          })),
+        ];
+        setMenu(initialMenu);
+      })
+      .catch((err) => console.error("Error fetching categories:", err));
+  }, []);
+
+  // Hàm xử lý sự kiện khi chọn danh mục
   const handleClick = (title: string) => {
-    setSelectedTitle(title); // Cập nhật state với title khi nhấn nút
+    setSelectedTitle(title); // Cập nhật danh mục được chọn
+
+    // Cập nhật trạng thái menu
     setMenu((prevMenu) =>
-      prevMenu.map((item) => ({
+      (prevMenu || []).map((item) => ({
         ...item,
-        current: item.title === title,
+        current: item.title === title, // Đặt `current: true` nếu title trùng với title được chọn, ngược lại là false
       }))
     );
   };
-  // Lọc sản phẩm dựa trên selectedTitle
-  const result = products.filter((product) => product.title === selectedTitle);
+
+  // Lọc sản phẩm dựa trên danh mục được chọn
+  const filteredProducts =
+    selectedTitle === "ALL"
+      ? products // Hiển thị toàn bộ sản phẩm nếu "ALL" được chọn
+      : products.filter(
+          (product: any) => product.category.categoryName === selectedTitle
+        );
+
   return (
     <>
       <div className="m-0 flex justify-center flex-row gap-5 lg:gap-24 items-center w-full p-10 lg:px-64 border-b-2 border-black">
-        {Menu.map((item) => (
+        {menu.map((item: any) => (
           <Button
             key={item.id}
-            className={`md:h-32 md:w-32 h-14 w-14 flex flex-col p-5 gap-0 ${
-              item.current ? "bg-orange-700" : "bg-orange-400 hover:bg-orange-700"
-            }`}
+            className={`md:h-32 md:w-32 h-14 w-14 flex flex-col p-5 gap-0 ${item.current ? "bg-orange-700" : "bg-orange-400 hover:bg-orange-700"
+              }`}
             value={item.title}
             onClick={() => handleClick(item.title)}
           >
@@ -159,22 +92,22 @@ export function ListProduct() {
       <div className="bg-white">
         <div className="mx-auto max-w-2xl sm:py-6 lg:max-w-7xl ">
           <div className="my-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8 justify-items-center">
-            {result.map((item) => (
+            {filteredProducts.map((item: any) => (
               <div
                 key={item.id}
                 className="w-80 h-auto bg-white border border-gray-200 rounded-lg shadow-xl dark:bg-gray-800 dark:border-gray-700 flex flex-col p-5 items-center"
               >
                 <img
                   className="rounded-t-lg items-center w-60 h-auto"
-                  src={item.img}
+                  src={item.image}
                   alt=""
                 />
                 <div className="px-5 pt-5">
                   <p className="text-center mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {item.title}
+                    {item.category.categoryName}
                   </p>
                   <p className="mb-1 text-2xl font-normal text-black dark:text-gray-400 text-center">
-                    {item.name}
+                    {item.title}
                   </p>
                   <p className="mb-3 text-2xl font-normal text-yellow-400 dark:text-gray-400 text-center">
                     {item.price} VND
@@ -196,6 +129,10 @@ export function ListProduct() {
     </>
   );
 }
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { menu } from "@material-tailwind/react";
+import category from "./category";
+import { any } from "zod";
 
 

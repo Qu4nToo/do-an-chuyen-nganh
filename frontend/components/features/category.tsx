@@ -48,7 +48,7 @@ export default function Category() {
           View All
         </Link>
       </div>
-      <div className="m-0 flex justify-center flex-row gap-5 lg:gap-24 items-center w-full p-10 lg:px-64 border-b-2 border-black">
+      <div className="m-0 flex justify-center flex-row gap-5 lg:gap-20 items-center w-full p-10 lg:px-64 border-b-2 border-black">
         {menu.map((item) => (
           <Button
             key={item.id}

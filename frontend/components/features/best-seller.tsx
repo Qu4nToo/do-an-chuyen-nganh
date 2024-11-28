@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -11,87 +11,16 @@ import {
 import ProductCard from "../ui/product-card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-interface Product {
-  id: number;
-  img: string;
-  title: string;
-  name: string;
-  price: string;
-}
+import axios from "axios";
 
-const products: Product[] = [
-  {
-    id: 1,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 2,
-    img: "/burger.png",
-    title: "Pizza",
-    name: "Fried Chicken Pizza",
-    price: "200000",
-  },
-  {
-    id: 3,
-    img: "/burger.png",
-    title: "Fries",
-    name: "Cheese Fries",
-    price: "100000",
-  },
-  {
-    id: 4,
-    img: "/burger.png",
-    title: "Chicken",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 5,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 6,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 7,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 8,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 9,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-  {
-    id: 10,
-    img: "/burger.png",
-    title: "Hamburger",
-    name: "Fried Chicken Burger",
-    price: "100000",
-  },
-];
 export default function BestSeller() {
+  const [products, setProducts] = useState<any[]>([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/admin/product/get")
+      .then((products) => setProducts(products.data))
+      .catch((err) => console.error("Error fetching products:", err));
+  }, []);
   return (
     <div className="w-full h-full pt-10 pb-10 px-10">
       <div className="m-0 flex items-start w-full p-auto lg:px-14">
@@ -109,15 +38,15 @@ export default function BestSeller() {
                 >
                   <img
                     className="rounded-t-lg items-center w-60 h-auto"
-                    src={item.img}
+                    src={item.image}
                     alt=""
                   />
                   <div className="px-5 pt-5">
                     <p className="text-center mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      {item.title}
+                      {item.category.categoryName}
                     </p>
                     <p className="mb-1 text-2xl font-normal text-black dark:text-gray-400 text-center">
-                      {item.name}
+                      {item.title}
                     </p>
                     <p className="mb-3 text-2xl font-normal text-yellow-400 dark:text-gray-400 text-center">
                       {item.price} VND
