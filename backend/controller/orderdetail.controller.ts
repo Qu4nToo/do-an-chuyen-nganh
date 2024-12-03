@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 // Tạo OrderDetail mới
 export const createOrderDetail = async (req, res) => {
   try {
-    const { orderID, productID, totalPrice, quantity, orderDate } = req.body;
+    const { orderID, productID, totalPrice, quantity } = req.body;
 
     // Kiểm tra các trường bắt buộc
-    if (!orderID || !productID || totalPrice === undefined || quantity === undefined || !orderDate) {
+    if (!orderID || !productID || totalPrice === undefined || quantity === undefined) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
 
@@ -19,7 +19,6 @@ export const createOrderDetail = async (req, res) => {
         productID,
         totalPrice,
         quantity,
-        orderDate,
       },
     });
 
@@ -75,12 +74,11 @@ export const getOrderDetailById = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
 // Cập nhật thông tin OrderDetail
 export const updateOrderDetail = async (req, res) => {
   try {
     const { orderID, productID } = req.params;
-    const { totalPrice, quantity, orderDate } = req.body;
+    const { totalPrice, quantity } = req.body;
 
     const updatedOrderDetail = await prisma.orderDetail.update({
       where: {
@@ -92,7 +90,6 @@ export const updateOrderDetail = async (req, res) => {
       data: {
         totalPrice,
         quantity,
-        orderDate,
       },
     });
 

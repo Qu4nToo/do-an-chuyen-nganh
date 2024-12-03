@@ -6,17 +6,18 @@ import Navbar from "@/components/features/navigation";
 import BannerCard from "@/components/features/banner";
 import BestSeller from "@/components/features/best-seller";
 import Footer from "@/components/features/footer";
-
+import ChatBot from "@/components/chatbotbubble";
 
 export default function Home() {
   return (
     <main>
-      <Navbar/>
+      <Navbar />
       <div className="w-5/6 h-full mx-auto">
-        <BannerCard/>
+        <BannerCard />
       </div>
-      <Category/>
-      <BestSeller/>
+      <Category />
+      <BestSeller />
+      <ChatBot/>
       <Footer/>
     </main>
   );

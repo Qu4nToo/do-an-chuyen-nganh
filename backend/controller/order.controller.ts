@@ -1,12 +1,13 @@
 import { PrismaClient, OrderStatus } from '@prisma/client';
-
 const prisma = new PrismaClient();
 
 // Tạo đơn hàng mới
 export const createOrder = async (req, res) => {
   try {
-    const { userID, status, address, phone, notice, } = req.body;
-    if (!userID || !status || !address || !phone|| !notice) {
+    const { userID, status, address, phone, notice, orderDate, totalAmount } = req.body;
+    const onlyDate = new Date(orderDate.toISOString().split('T')[0]);
+    console.log(onlyDate);
+    if (!userID || !status || !address || !phone || !notice || !orderDate || !totalAmount) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
     if (!status || !OrderStatus[status]) {
@@ -24,6 +25,8 @@ export const createOrder = async (req, res) => {
         // status: status || OrderStatus.Pending, 
         phone,
         notice,
+        orderDate: onlyDate,
+        totalAmount,
       },
     });
 
@@ -45,7 +48,13 @@ export const getOrders = async (req, res) => {
       },
     });
 
-    return res.status(200).json(orders);
+    // Chỉ giữ lại ngày, tháng, năm của `orderDate`
+    const formattedOrders = orders.map(order => ({
+      ...order,
+      orderDate: order.orderDate.toISOString().split('T')[0], // Chỉ giữ lại YYYY-MM-DD
+    }));
+
+    return res.status(200).json(formattedOrders);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -65,12 +74,14 @@ export const getOrderById = async (req, res) => {
         orderDetails: true,  // Bao gồm thông tin chi tiết đơn hàng
       },
     });
-
+    const formattedOrders = order => ({
+      ...order,
+      orderDate: order.orderDate.toISOString().split('T')[0], // Chỉ giữ lại YYYY-MM-DD
+    });
     if (!order) {
       return res.status(404).json({ error: 'Không tim thấy Order' });
     }
-
-    return res.status(200).json(order);
+    return res.status(200).json(formattedOrders);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -81,8 +92,9 @@ export const getOrderById = async (req, res) => {
 export const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const {userID, status, address, phone, notice } = req.body;
-    if (!userID || !status || !address || !phone|| !notice) {
+    const { userID, status, address, phone, notice, orderDate, totalAmount } = req.body;
+    const onlyDate = new Date(orderDate.toISOString().split('T')[0]);
+    if (!userID || !status || !address || !phone || !notice || !orderDate || !totalAmount) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
     if (!Object.values(OrderStatus).includes(status)) {
@@ -94,7 +106,7 @@ export const updateOrder = async (req, res) => {
     }
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: { userID, status, address, phone, notice },
+      data: { userID, status, address, phone, notice, orderDate: onlyDate, totalAmount },
     });
 
     return res.status(200).json(updatedOrder);

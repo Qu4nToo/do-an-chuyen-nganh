@@ -12,7 +12,7 @@ const router = express.Router();
 // Định nghĩa các route cho OrderDetail
 router.post('/create', createOrderDetail); // Tạo OrderDetail mới
 router.get('/get', getOrderDetails); // Lấy danh sách OrderDetail
-router.get('/get/:orderID/:productID', getOrderDetailById); // Lấy OrderDetail theo ID
+router.get('/get/:orderID/:productID', getOrderDetailById); // Lấy OrderDetail theo ID 
 router.put('/update/:orderID/:productID', updateOrderDetail);
 router.delete('/delete/:orderID/:productID', deleteOrderDetail); // Xóa OrderDetail
 
