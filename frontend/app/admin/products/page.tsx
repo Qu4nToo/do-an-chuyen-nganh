@@ -66,19 +66,7 @@ import { Toaster } from "@/components/ui/toaster"
 
 
 export default function Products() {
-    // interface Product{
-    //     id: string,
-    //     title: string,
-    //     description: string,
-    //     price: number,
-    //     image: string,
-    //     categoryID: string,
-    //     category: {
-    //         id: string,
-    //         categoryName: string,
-    //     },
-    //     orderDetails: [],
-    // }
+    const [file, setFile] = useState<File | null>(null);
     const [products, setProducts] = useState([]);
     const [product, setProduct] = useState<any>([]);
     const [categories, setCategories] = useState([]);
@@ -112,16 +100,20 @@ export default function Products() {
         }
         console.log(newProduct);
     };
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        // Kiểm tra xem có phải là trường categoryName không
-        if (id === "id") {
+        const { id, files } = e.target; // Lấy id và files từ target (input)
+        if (files && files[0]) {
+            const fileName = "/" + files[0].name; // Lấy tên file từ đối tượng file
+            console.log(fileName); // In ra tên tệp
+            // Nếu bạn muốn xử lý thêm, ví dụ như lưu vào state:
             setNewProduct((prev) => ({
                 ...prev,
+                [id]: fileName, // Lưu tên file vào state
             }));
-        } else {
-            // Cập nhật các trường còn lại trong newProduct
+        }
+        // Nếu không phải file, xử lý giá trị text bình thường
+        if (id !== "image") {
+            const { value } = e.target;
             setNewProduct((prev) => ({
                 ...prev,
                 [id]: value,
@@ -129,11 +121,7 @@ export default function Products() {
         }
         console.log(newProduct);
     };
-    // const handleInputChange = () => {
-    //     setNewProduct({
-    //         ...newProduct,
-    //     });
-    // };
+
 
     useEffect(() => {
         axios.get("http://localhost:5000/api/admin/product/get")
@@ -286,7 +274,7 @@ export default function Products() {
                                         <Label htmlFor="image" className="text-right col-span-2">
                                             Image
                                         </Label>
-                                        <Input onChange={handleInputChange} id="image" type="text" className="col-span-4" />
+                                        <Input onChange={handleInputChange} id="image" type="file" className="col-span-4" accept="Image/*" />
                                     </div>
                                     {/* <div className="grid grid-cols-6 items-center gap-4">
                                         <Label htmlFor="category" className="text-right col-span-2">
@@ -443,13 +431,13 @@ export default function Products() {
                         <AlertDialogTitle>Edit product</AlertDialogTitle>
                     </AlertDialogHeader>
                     <div className="grid gap-4 py-4">
+                        <Image className="mx-auto" src={product.image} alt={""} width={96} height={96} />
                         <div className="grid grid-cols-6 items-center gap-4">
                             <Label htmlFor="image" className="text-right col-span-2">
                                 Image
                             </Label>
-                            <Input onChange={handleInputChange} id="image" type="text" className="col-span-4" defaultValue={product.image} />
+                            <Input onChange={handleInputChange} id="image" type="file" className="col-span-4" accept="Image/*" />
                         </div>
-
                         <div className="grid grid-cols-6 items-center gap-4">
                             <Label htmlFor="categoryID" className="text-right col-span-2">
                                 Category

@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 // Tạo người dùng mới
 export const createUser = async (req, res) => {
   try {
-    const { Name, passWord, email, roleID } = req.body;
+    const { name, passWord, email, roleID } = req.body;
 
     // Kiểm tra nếu thiếu thông tin
-    if (!Name || !passWord || !email || !roleID) {
+    if (!name || !passWord || !email || !roleID) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
 
@@ -18,7 +18,7 @@ export const createUser = async (req, res) => {
 
     const newUser = await prisma.user.create({
       data: {
-        Name,
+        name,
         passWord,
         email,
         roleID,
@@ -77,17 +77,17 @@ export const getUserById = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { Name, passWord, email, roleID } = req.body;
+    const { name, passWord, email, roleID } = req.body;
     if (!validator.isEmail(email)) {
       return res.status(400).json({ error: 'Địa chỉ email không hợp lệ' });
     }
-    if (!Name || !passWord || !email || !roleID) {
+    if (!name || !passWord || !email || !roleID) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
-        Name,
+        name,
         passWord,
         email,
         roleID,

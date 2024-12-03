@@ -14,13 +14,13 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(uuid()) @db.Char(36)
-  Name  String @db.VarChar(30)
-  passWord  String @db.VarChar(30)
-  email     String @unique @db.VarChar(30)
-  roleID    String  @db.Char(36)
-  role      Role    @relation(fields: [roleID], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  orders    Order[]
+  id       String  @id @default(uuid()) @db.Char(36)
+  name     String  @db.VarChar(30)
+  passWord String  @db.VarChar(30)
+  email    String  @unique @db.VarChar(30)
+  roleID   String  @db.Char(36)
+  role     Role    @relation(fields: [roleID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orders   Order[]
 }
 
 enum RoleName {
@@ -29,7 +29,7 @@ enum RoleName {
 }
 
 model Role {
-  id       String    @id @default(uuid()) @db.Char(36)
+  id       String   @id @default(uuid()) @db.Char(36)
   roleName RoleName @default(User)
   users    User[]
 }
@@ -43,10 +43,12 @@ enum OrderStatus {
 
 model Order {
   id           String        @id @default(uuid()) @db.Char(36)
-  status       OrderStatus  @default(Pending)
-  address      String       @db.VarChar(30)
-  phone        String       @db.Char(10)
-  notice       String       @db.VarChar(50)
+  status       OrderStatus   @default(Pending)
+  orderDate    DateTime      @db.Date
+  address      String        @db.VarChar(30)
+  phone        String        @db.Char(10)
+  notice       String        @db.VarChar(50)
+  totalAmount  Decimal
   userID       String        @db.Char(36)
   user         User          @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: NoAction)
   coupons      Coupon[]
@@ -54,39 +56,40 @@ model Order {
 }
 
 model Coupon {
-  id            String    @id @default(uuid()) @db.Char(36)
-  endDate       DateTime 
-  startDate     DateTime 
+  id            String   @id @default(uuid()) @db.Char(36)
+  endDate       DateTime
+  startDate     DateTime
   discountValue Int
   couponCode    String   @unique @default(uuid()) @db.Char(36)
-  orderID       String    @db.Char(36)
-  order         Order     @relation(fields: [orderID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orderID       String   @db.Char(36)
+  order         Order    @relation(fields: [orderID], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Category {
   id           String    @id @default(uuid()) @db.Char(36)
-  categoryName String   @db.VarChar(30)
+  image        String    @db.VarChar(30)
+  categoryName String    @db.VarChar(30)
   products     Product[]
 }
 
 model Product {
   id           String        @id @default(uuid()) @db.Char(36)
-  title        String       @db.VarChar(30)
-  description  String      @db.VarChar(50)
+  title        String        @db.VarChar(30)
+  description  String        @db.VarChar(50)
   price        Decimal
-  image        String       @db.VarChar(30)
+  image        String        @db.VarChar(30)
   categoryID   String        @db.Char(36)
   category     Category      @relation(fields: [categoryID], references: [id], onDelete: Cascade, onUpdate: NoAction)
   orderDetails OrderDetail[]
 }
 
 model OrderDetail {
-  orderID    String    @db.Char(36)
-  productID  String    @db.Char(36)
+  orderID    String  @db.Char(36)
+  productID  String  @db.Char(36)
   totalPrice Float
   quantity   Int
-  orderDate  DateTime
-  order      Order     @relation(fields: [orderID], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  product    Product   @relation(fields: [productID], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  @@id([orderID,productID])
+  order      Order   @relation(fields: [orderID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  product    Product @relation(fields: [productID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([orderID, productID])
 }

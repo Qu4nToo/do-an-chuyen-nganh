@@ -5,16 +5,17 @@ const prisma = new PrismaClient();
 // Tạo Category mới
 export const createCategory = async (req, res) => {
   try {
-    const { categoryName } = req.body;
+    const { image, categoryName } = req.body;
 
     // Kiểm tra trường dữ liệu
-    if (!categoryName) {
+    if (!categoryName || !image) {
       return res.status(400).json({ error: 'tên Category là bắt buộc' });
     }
 
     // Tạo category mới
     const newCategory = await prisma.category.create({
       data: {
+        image,
         categoryName,
       },
     });
@@ -69,11 +70,15 @@ export const getCategoryById = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { categoryName } = req.body;
-
+    const { image, categoryName } = req.body;
+    // Kiểm tra trường dữ liệu
+    if (!categoryName || !image) {
+      return res.status(400).json({ error: 'tên Category là bắt buộc' });
+    }
     const updatedCategory = await prisma.category.update({
       where: { id },
       data: {
+        image,
         categoryName,
       },
     });

@@ -5,7 +5,13 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         key: 'dashboard',
         label: 'Dashboard',
         path: '/admin/dashboard',
-        icon: <Home/>
+        icon: <Home />
+    },
+    {
+        key: 'Category',
+        label: 'Category',
+        path: '/admin/Category',
+        icon: <Package />
     },
     {
         key: 'Products',
@@ -18,12 +24,6 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         label: 'Orders',
         path: '/admin/orders',
         icon: <ShoppingCart />
-    },
-    {
-        key: 'Customers',
-        label: 'Customers',
-        path: '/admin/customers',
-        icon: <Users />
     },
     {
         key: 'Transactions',
