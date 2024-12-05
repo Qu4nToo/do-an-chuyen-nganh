@@ -8,6 +8,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         icon: <Home />
     },
     {
+        key: 'User',
+        label: 'User',
+        path: '/admin/user',
+        icon: <Users />
+    },
+    {
         key: 'Category',
         label: 'Category',
         path: '/admin/Category',
@@ -24,17 +30,5 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         label: 'Orders',
         path: '/admin/orders',
         icon: <ShoppingCart />
-    },
-    {
-        key: 'Transactions',
-        label: 'Transactions',
-        path: '/admin/transactions',
-        icon: <LineChart />
-    },
-    {
-        key: 'Messengers',
-        label: 'Messengers',
-        path: '/admin/messengers',
-        icon: <Bell />
     }
 ]
