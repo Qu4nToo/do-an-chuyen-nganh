@@ -14,6 +14,7 @@ import routerCategory from './router/category.router';
 import routerOrder from './router/order.router';
 import routerOrderDetail from './router/orderdetail.router';
 import routerCoupon from './router/coupon.router'
+// import order from './router/order'
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/api/admin/role', routerRole);
 app.use('/api/admin/category', routerCategory);
 app.use('/api/admin/order', routerOrder);
 app.use('/api/admin/orderdetail', routerOrderDetail);
+// app.use('/order', order);
 
 app.listen(port, async () => {
     console.log(`Server running on port ${port}`);

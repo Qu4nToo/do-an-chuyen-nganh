@@ -27,8 +27,9 @@ import getOrderDetailsByOrderID from '../../../../backend/getOrderDetailsByOrder
 import { any } from "zod"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialogadmin"
 import { useRouter } from 'next/compat/router';
+import { ScrollArea } from "@/components/ui/scroll-area"
 export default function Orders() {
     const router = useRouter();
     const getStatusColor = (status: any) => {
@@ -43,6 +44,7 @@ export default function Orders() {
                 return "bg-gray-500 text-white"; // Màu xám cho trạng thái không xác định
         }
     };
+    let total = 0;
     const [orderDetail, setOrderDetail] = useState([]);
     const [orderDetailFilter, setOrderDetailFilter] = useState<any>([]);
     const [showView, setShowView] = useState(false);
@@ -72,47 +74,31 @@ export default function Orders() {
         // Loại bỏ ký hiệu "₫" mặc định
         return formatter.format(price).replace('₫', 'VND').trim();
     };
-    
-    const navigateToTargetPage = () => {
-        if (!router) return;
-        handleViewClick;
-        // router.push({
-        //     pathname: './orders/orderdetail/',
-        //     query: { orderID: order.id, orderDetail: orderDetailFilter },
-        // });
-        router.push('/orderdetail');
-    };
-    function handleViewClick(order: any) {
-        setOrder(order);
-        console.log(orderDetail);
 
-        // Lọc dữ liệu
-        const filteredOrderDetail = orderDetail.filter((detail: any) => detail.orderID === order.id);
-        console.log("Filtered Order Detail", filteredOrderDetail);
-
-        // Cập nhật state
+    // const navigateToTargetPage = () => {
+    //     if (!router) return;
+    //     handleViewClick;
+    //     // router.push({
+    //     //     pathname: './orders/orderdetail/',
+    //     //     query: { orderID: order.id, orderDetail: orderDetailFilter },
+    //     // });
+    //     router.push('/orderdetail');
+    // };
+    function handleViewClick(orders: any) {
+        console.log(orders);
+        setOrder(orders);
+        const filteredOrderDetail = orderDetail.filter((detail: any) => detail.orderID === orders.id);
         setOrderDetailFilter(filteredOrderDetail);
 
-        // Lưu dữ liệu vào localStorage
-        const handleSaveData = () => {
-            localStorage.setItem('orderData', JSON.stringify(order)); // Lưu order
-            localStorage.setItem('orderDetailData', JSON.stringify(filteredOrderDetail)); // Lưu orderDetail
-        };
-
-        // Gọi hàm lưu dữ liệu
-        handleSaveData();
-
-        // Hiển thị dialog hoặc modal
         setShowView(true);
     }
-
     // Hàm đóng dialog hoặc modal
     const handleViewClose = () => {
         setShowView(false);
     };
     return (
         <Admin>
-            <button onClick={navigateToTargetPage}>Go to Order Detail</button>
+            <button>Go to Order Detail</button>
             <Card>
                 <CardHeader className="px-7">
                     <CardTitle>Orders</CardTitle>
@@ -131,23 +117,23 @@ export default function Orders() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {orders.map((order: any) => (
-                                <TableRow key={order.id} className="bg-white">
+                            {orders.map((orders: any) => (
+                                <TableRow key={orders.id} className="bg-white">
                                     <TableCell>
-                                        <div className="font-medium">{order.user.name}</div>
+                                        <div className="font-medium">{orders.user.name}</div>
                                         <div className="hidden text-sm text-muted-foreground md:inline">
-                                            {order.user.email}
+                                            {orders.user.email}
                                         </div>
                                     </TableCell>
-                                    <TableCell className="hidden sm:table-cell">{order.phone}</TableCell>
-                                    <TableCell className="hidden sm:table-cell">{order.address}</TableCell>
+                                    <TableCell className="hidden sm:table-cell">{orders.phone}</TableCell>
+                                    <TableCell className="hidden sm:table-cell">{orders.address}</TableCell>
                                     <TableCell className="hidden sm:table-cell">
-                                        <Badge className={`text-xs ${getStatusColor(order.status)}`} variant="outline">
-                                            {order.status}
+                                        <Badge className={`text-xs ${getStatusColor(orders.status)}`} variant="outline">
+                                            {orders.status}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="hidden md:table-cell">{order.orderDate}</TableCell>
-                                    <TableCell className="">{formatPrice(order.totalAmount)}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{orders.orderDate}</TableCell>
+                                    <TableCell className="">{formatPrice(orders.totalAmount)}</TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -163,7 +149,7 @@ export default function Orders() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => navigateToTargetPage()}>View</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleViewClick(orders)}>View</DropdownMenuItem>
                                                 <DropdownMenuItem >Edit</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
@@ -174,7 +160,278 @@ export default function Orders() {
                     </Table>
                 </CardContent>
             </Card>
-        </Admin>
+            {/* <Dialog open={showView} onOpenChange={setShowView}>
+                <DialogContent>
+                    <div className="h-[80%]">
+                        <DialogTitle>
+                            <div className="flex justify-start item-start space-y-1 flex-col ">
+                                <h1 className="text-3xl font-semibold leading-7 lg:leading-9  text-gray-800">#{order.id}</h1>
+                                <p className="text-base font-medium leading-6 text-gray-600">{order.orderDate}</p>
+                            </div>
+                        </DialogTitle>
+
+                        <div className=" flex flex-row jusitfy-center items-stretch w-full ">
+                            <div className="flex flex-col justify-start items-start w-full ">
+                                <div className="flex flex-col justify-start items-start bg-gray-50 px-4 py-4 w-full">
+                                    <p className="text-lg font-semibold leading-6 text-gray-800">Product</p>
+                                    <ScrollArea className="h-80 w-auto rounded-md border p-3">
+                                        <div className=" border-2 rounded-md pr-4 pl-2 mt-4 flex  flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full me-2">
+                                            <div className="pb-4 w-24">
+                                                <p>Image</p>
+                                            </div>
+                                            <div className="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full  md:space-y-0">
+                                                <div className="w-full flex flex-col justify-start items-start space-y-8">
+                                                    <h3 className="text-xl xl:text-2xl font-semibold leading-6 text-gray-800">
+                                                        name
+                                                    </h3>
+
+                                                </div>
+                                                <div className="flex justify-between space-x-8 items-start w-full">
+                                                    <p className="text-base xl:text-lg leading-6">
+                                                        price
+                                                    </p>
+                                                    <p className="text-base xl:text-lg leading-6 text-gray-800">quantity</p>
+                                                    <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">total</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {Array.isArray(orderDetailFilter) && orderDetailFilter.map((item: any) => (
+                                            <div className=" border-2 rounded-md pr-4 pl-2 mt-4 flex  flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full me-2">
+                                                <div className="pb-4 w-24">
+                                                    <img
+                                                        className="w-full hidden md:block"
+                                                        src={item.product.image}
+                                                        alt="product image"
+                                                    />
+                                                </div>
+                                                <div className="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full  md:space-y-0">
+                                                    <div className="w-full flex flex-col justify-start items-start space-y-8">
+                                                        <h3 className="text-xl xl:text-2xl font-semibold leading-6 text-gray-800">
+                                                            {item.product.title}
+                                                        </h3>
+
+                                                    </div>
+                                                    <div className="flex justify-between space-x-8 items-start w-full">
+                                                        <p className="text-base xl:text-lg leading-6">
+                                                            {formatPrice(item.product.price)}
+                                                        </p>
+                                                        <p className="text-base xl:text-lg leading-6 text-gray-800">{item.quantity}</p>
+                                                        <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">{formatPrice(item.product.price * item.quantity)}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+
+
+                                    </ScrollArea>
+                                </div>
+                                <div className="flex justify-center md:flex-row flex-col items-stretch w-full space-y-0 md:space-x-6 xl:space-x-8">
+                                    <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 space-y-6   ">
+                                        <h3 className="text-xl font-semibold leading-5 text-gray-800">Summary</h3>
+                                        <div className="flex justify-center items-center w-full  flex-col border-gray-200 border-b pb-4">
+                                            <div className="flex justify-between  w-full">
+                                                <p className="text-base leading-4 text-gray-800">Subtotal</p>
+                                                <p className="text-base leading-4 text-gray-600">$56.00</p>
+                                            </div>
+                                            <div className="flex justify-between items-center w-full">
+                                                <p className="text-base leading-4 text-gray-800">
+                                                    Discount <span className="bg-gray-200 p-1 text-xs font-medium leading-3  text-gray-800">STUDENT</span>
+                                                </p>
+                                                <p className="text-base leading-4 text-gray-600">-$28.00 (50%)</p>
+                                            </div>
+                                            <div className="flex justify-between items-center w-full">
+                                                <p className="text-base leading-4 text-gray-800">Shipping</p>
+                                                <p className="text-base leading-4 text-gray-600">$8.00</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-center w-full">
+                                            <p className="text-base font-semibold leading-4 text-gray-800">Total</p>
+                                            <p className="text-base font-semibold leading-4 text-gray-600">$36.00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 w-full xl:w-96 flex justify-between items-center md:items-start px-4 py-6 md:p-6 xl:p-8 flex-col ">
+                                <h3 className="text-xl font-semibold leading-5 text-gray-800">Customer</h3>
+                                <div className="flex  flex-col md:flex-row xl:flex-col justify-start items-stretch h-full w-full md:space-x-6 lg:space-x-8 xl:space-x-0 ">
+                                    <div className="flex flex-col justify-start items-start flex-shrink-0">
+                                        <div className="flex justify-center  w-full  md:justify-start items-center space-x-4 py-8 border-b border-gray-200">
+                                            <div className=" flex justify-start items-start flex-col space-y-2">
+                                                {order?.user?.name ? (
+                                                    <p className="text-base font-semibold leading-4 text-left text-gray-800">{order.user.name}</p>
+                                                ) : (
+                                                    <p className="text-base font-semibold leading-4 text-left text-gray-800">User name not available</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-center  md:justify-start items-center space-x-4 py-4 border-b border-gray-200 w-full">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z" stroke="#1F2937" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M3 7L12 13L21 7" stroke="#1F2937" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                            {order?.user?.email ? (
+                                                <p className="cursor-pointer text-sm leading-5 text-gray-800">{order.user.email}</p>
+                                            ) : (
+                                                <p className="cursor-pointer text-sm leading-5 text-gray-800"></p>
+                                            )}
+                                        </div>
+                                        <div className="flex justify-center  md:justify-start items-center space-x-4 py-4 border-b border-gray-200 w-full">
+                                            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z" /></svg>
+                                            <p className="cursor-pointer text-sm leading-5 text-gray-800">{order.phone}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between xl:h-full  items-stretch w-full flex-col mt-6 md:mt-0">
+                                        <div className="flex justify-center md:justify-start xl:flex-col flex-col md:space-x-6 lg:space-x-8 xl:space-x-0  xl:space-y-12 md:space-y-0 md:flex-row  items-center md:items-start ">
+                                            <div className="flex justify-center md:justify-start  items-center md:items-start flex-col  xl:mt-8">
+                                                <p className="text-base font-semibold leading-4 text-center md:text-left text-gray-800">Shipping Address</p>
+                                                <p className="w-48 lg:w-full xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">{order.address}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex w-full justify-center items-center md:justify-start md:items-start">
+                                            <button className="mt-6 md:mt-0 py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base leading-4 text-gray-800">Edit Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog> */}
+            <Dialog open={showView} onOpenChange={setShowView}>
+                <DialogContent>
+                    <div className="h-[80%]">
+                        <DialogTitle>
+                            <div className="flex justify-start item-start space-y-1 flex-col ">
+                                <h1 className="text-3xl font-semibold leading-7 lg:leading-9  text-gray-800">#{order.id}</h1>
+                                <p className="text-base font-medium leading-6 text-gray-600">{order.orderDate}</p>
+                            </div>
+                        </DialogTitle>
+
+                        <div className=" flex flex-row jusitfy-center items-stretch w-full ">
+                            <div className="flex flex-col justify-start items-start w-full ">
+                                <div className="flex flex-col justify-start items-start bg-gray-50 px-4 py-4 w-full">
+                                    <p className="text-lg font-semibold leading-6 text-gray-800">Product</p>
+                                    <Table>
+                                        <ScrollArea className="h-80 w-auto rounded-md border p-3">
+                                            <TableHeader>
+                                                <TableRow className="sticky top-0 bg-gray-300 text-black">
+                                                    <TableHead>Image</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Product name</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Price</TableHead>
+                                                    <TableHead className="hidden sm:table-cell">Quantity</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Total</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {Array.isArray(orderDetailFilter) && orderDetailFilter.map((item: any) => {
+                                                    const subtotal = item?.product?.price * item?.quantity || 0;
+                                                    total += subtotal;
+                                                    return(
+                                                        <TableRow className="bg-white">
+                                                        <TableCell>
+                                                            <div className="pb-4 w-24">
+                                                                <img
+                                                                    className="w-full hidden md:block"
+                                                                    src={item.product.image}
+                                                                    alt="product image"
+                                                                />
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">{item.product.title}</p>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">
+                                                                {formatPrice(item.product.price)}
+                                                            </p>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">{item.quantity}</p>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">{formatPrice(subtotal)}</p>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    )
+                                                })}
+                                            </TableBody>
+                                        </ScrollArea>
+                                    </Table>
+
+                                </div>
+                                <div className="flex justify-center md:flex-row flex-col items-stretch w-full space-y-0 md:space-x-6 xl:space-x-8">
+                                    <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 space-y-6   ">
+                                        <h3 className="text-xl font-semibold leading-5 text-gray-800">Summary</h3>
+                                        <div className="flex justify-center items-center w-full  flex-col border-gray-200 border-b pb-4">
+                                            {/* <div className="flex justify-between items-center w-full">
+                                                <p className="text-base leading-4 text-gray-800">
+                                                    Discount <span className="bg-gray-200 p-1 text-xs font-medium leading-3  text-gray-800">STUDENT</span>
+                                                </p>
+                                                <p className="text-base leading-4 text-gray-600">-$28.00 (50%)</p>
+                                            </div> */}
+                                            {/* <div className="flex justify-between items-center w-full">
+                                                <p className="text-base leading-4 text-gray-800">Shipping</p>
+                                                <p className="text-base leading-4 text-gray-600">$8.00</p>
+                                            </div> */}
+                                        </div>
+                                        <div className="flex justify-between items-center w-full">
+                                            <p className="text-base font-semibold leading-4 text-gray-800">Total</p>
+                                            <p className="text-base font-semibold leading-4 text-gray-600">{formatPrice(total)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 w-full xl:w-96 flex justify-between items-center md:items-start px-4 py-6 md:p-6 xl:p-8 flex-col ">
+                                <h3 className="text-xl font-semibold leading-5 text-gray-800">Customer</h3>
+                                <div className="flex  flex-col md:flex-row xl:flex-col justify-start items-stretch h-full w-full md:space-x-6 lg:space-x-8 xl:space-x-0 ">
+                                    <div className="flex flex-col justify-start items-start flex-shrink-0">
+                                        <div className="flex justify-center  w-full  md:justify-start items-center space-x-4 py-8 border-b border-gray-200">
+                                            <div className=" flex justify-start items-start flex-col space-y-2">
+                                                {order?.user?.name ? (
+                                                    <p className="text-base font-semibold leading-4 text-left text-gray-800">{order.user.name}</p>
+                                                ) : (
+                                                    <p className="text-base font-semibold leading-4 text-left text-gray-800">User name not available</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-center  md:justify-start items-center space-x-4 py-4 border-b border-gray-200 w-full">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M19 5H5C3.89543 5 3 5.89543 3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5Z" stroke="#1F2937" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M3 7L12 13L21 7" stroke="#1F2937" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                            {order?.user?.email ? (
+                                                <p className="cursor-pointer text-sm leading-5 text-gray-800">{order.user.email}</p>
+                                            ) : (
+                                                <p className="cursor-pointer text-sm leading-5 text-gray-800"></p>
+                                            )}
+                                        </div>
+                                        <div className="flex justify-center  md:justify-start items-center space-x-4 py-4 border-b border-gray-200 w-full">
+                                            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z" /></svg>
+                                            <p className="cursor-pointer text-sm leading-5 text-gray-800">{order.phone}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between xl:h-full  items-stretch w-full flex-col mt-6 md:mt-0">
+                                        <div className="flex justify-center md:justify-start xl:flex-col flex-col md:space-x-6 lg:space-x-8 xl:space-x-0  xl:space-y-12 md:space-y-0 md:flex-row  items-center md:items-start ">
+                                            <div className="flex justify-center md:justify-start  items-center md:items-start flex-col  xl:mt-8">
+                                                <p className="text-base font-semibold leading-4 text-center md:text-left text-gray-800">Shipping Address</p>
+                                                <p className="w-48 lg:w-full xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">{order.address}</p>
+                                            </div>
+                                        </div>
+                                        {/* <div className="flex w-full justify-center items-center md:justify-start md:items-start">
+                                            <button className="mt-6 md:mt-0 py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base leading-4 text-gray-800">Edit Details</button>
+                                        </div> */}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+        </Admin >
+
     )
 }
 
