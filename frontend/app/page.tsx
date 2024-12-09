@@ -7,10 +7,12 @@ import BannerCard from "@/components/features/banner";
 import BestSeller from "@/components/features/best-seller";
 import Footer from "@/components/features/footer";
 import ChatBot from "@/components/chatbotbubble";
+import { CartProvider } from "@/components/features/cart-context";
 
 export default function Home() {
   return (
     <main>
+      <CartProvider>
       <Navbar />
       <div className="w-5/6 h-full mx-auto">
         <BannerCard />
@@ -19,6 +21,8 @@ export default function Home() {
       <BestSeller />
       <ChatBot/>
       <Footer/>
+      </CartProvider>
+
     </main>
   );
 }

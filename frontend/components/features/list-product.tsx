@@ -6,6 +6,7 @@ import axios from "axios";
 import { menu } from "@material-tailwind/react";
 import category from "./category";
 import { any } from "zod";
+import { useCart } from "./cart-context";
 
 
 interface MenuItem {
@@ -33,6 +34,7 @@ export function ListProduct() {
     return formatter.format(price).replace('₫', 'VND').trim();
   };
   const [selectedTitle, setSelectedTitle] = useState<string>("ALL");
+  const { addToCart } = useCart();
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [menu, setMenu] = useState<MenuItem[]>([]);
@@ -89,6 +91,17 @@ export function ListProduct() {
         (product: any) => product.category.categoryName === selectedTitle
       );
 
+  function handleAddToCart(item: any): void {
+    const cartItem = {
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      quantity: 1, // Mặc định thêm 1 sản phẩm
+      image: item.image,
+    };
+    addToCart(cartItem);
+  }
+
   return (
     <>
       <div className="m-0 flex justify-center flex-row gap-2 md:gap-6 lg:gap-24 items-center w-full p-10 lg:px-auto border-b-2 border-black">
@@ -136,11 +149,11 @@ export function ListProduct() {
                   </p>
                 </div>
                 <div className="flex gap-2 md:gap-5">
-                  <Button className=" bg-red-600 hover:bg-orange-400 rounded-full md:w-10 md:h-10 w-5 h-auto">
-                    <FontAwesomeIcon icon={faPlus} />
-                  </Button>
-                  <Button className=" bg-red-600 pl-4  hover:bg-orange-400 gap-0 w-auto h-auto">
-                    <p className="text-xs md:text-md font-bold">Buy Now</p>
+                <Button
+                    onClick={() => handleAddToCart(item)} // Thêm sản phẩm vào giỏ
+                    className=" bg-red-600 pl-4  hover:bg-orange-400 gap-0"
+                  >
+                    <p className="text-xl font-bold">Add to Cart</p>
                   </Button>
                 </div>
               </div>
