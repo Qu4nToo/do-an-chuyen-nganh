@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 export const createOrderDetail = async (req, res) => {
   try {
     const { orderID, productID, totalPrice, quantity } = req.body;
-
     // Kiểm tra các trường bắt buộc
     if (!orderID || !productID || totalPrice === undefined || quantity === undefined) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });

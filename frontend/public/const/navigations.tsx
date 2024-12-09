@@ -1,4 +1,4 @@
-import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users } from 'lucide-react'
+import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Ticket, Users } from 'lucide-react'
 
 export const DASHBOARD_SIDEBAR_LINKS = [
     {
@@ -16,7 +16,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     {
         key: 'Category',
         label: 'Category',
-        path: '/admin/Category',
+        path: '/admin/category',
         icon: <Package />
     },
     {
@@ -30,5 +30,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         label: 'Orders',
         path: '/admin/orders',
         icon: <ShoppingCart />
+    },
+    {
+        key: 'Coupon',
+        label: 'Coupon',
+        path: '/admin/coupon',
+        icon: <Ticket />
     }
+
 ]
