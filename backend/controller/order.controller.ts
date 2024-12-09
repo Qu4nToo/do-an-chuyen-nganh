@@ -5,8 +5,6 @@ const prisma = new PrismaClient();
 export const createOrder = async (req, res) => {
   try {
     const { userID, status, address, phone, notice, orderDate, totalAmount } = req.body;
-    const onlyDate = new Date(orderDate.toISOString().split('T')[0]);
-    console.log(onlyDate);
     if (!userID || !status || !address || !phone || !notice || !orderDate || !totalAmount) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
@@ -25,7 +23,7 @@ export const createOrder = async (req, res) => {
         // status: status || OrderStatus.Pending, 
         phone,
         notice,
-        orderDate: onlyDate,
+        orderDate,
         totalAmount,
       },
     });
@@ -69,19 +67,23 @@ export const getOrderById = async (req, res) => {
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
-        user: true,          // Bao gồm thông tin người dùng
-        coupons: true,       // Bao gồm thông tin các coupon
-        orderDetails: true,  // Bao gồm thông tin chi tiết đơn hàng
+        user: true,
+        coupons: true,
+        orderDetails: true,
       },
     });
-    const formattedOrders = order => ({
-      ...order,
-      orderDate: order.orderDate.toISOString().split('T')[0], // Chỉ giữ lại YYYY-MM-DD
-    });
+    console.log(order);
     if (!order) {
-      return res.status(404).json({ error: 'Không tim thấy Order' });
+      return res.status(404).json({ error: 'Không tìm thấy Order' });
     }
-    return res.status(200).json(formattedOrders);
+
+    // const formattedOrder = {
+    //   ...order,
+    //   orderDate: order.orderDate.toISOString().split('T')[0],
+    // };
+    
+    // return res.status(200).json(formattedOrder);
+    return res.status(200).json(order);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });
@@ -93,7 +95,7 @@ export const updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const { userID, status, address, phone, notice, orderDate, totalAmount } = req.body;
-    const onlyDate = new Date(orderDate.toISOString().split('T')[0]);
+    const onlyDate = new Date(orderDate + 'T00:00:00.000Z');
     if (!userID || !status || !address || !phone || !notice || !orderDate || !totalAmount) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }

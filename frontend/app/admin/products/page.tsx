@@ -63,6 +63,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
+import { Textarea } from "@/components/ui/textarea"
+import Category from "../Category/page"
 
 
 export default function Products() {
@@ -80,10 +82,28 @@ export default function Products() {
         image: '',
         categoryID: '',
         title: '',
+        calories: "",
         price: 0,
         description: ''
     });
     const handleInputChange2 = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { id, value } = e.target;
+
+        // Kiểm tra xem có phải là trường categoryName không
+        if (id === "id") {
+            setNewProduct((prev) => ({
+                ...prev,
+            }));
+        } else {
+            // Cập nhật các trường còn lại trong newProduct
+            setNewProduct((prev) => ({
+                ...prev,
+                [id]: value,
+            }));
+        }
+        console.log(newProduct);
+    };
+    const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { id, value } = e.target;
 
         // Kiểm tra xem có phải là trường categoryName không
@@ -217,6 +237,7 @@ export default function Products() {
                     image: '',
                     categoryID: '',
                     title: '',
+                    calories: "",
                     price: 0,
                     description: ''
                 });
@@ -230,6 +251,9 @@ export default function Products() {
                 <div className="flex items-center">
                     <TabsList>
                         <TabsTrigger value="all">All</TabsTrigger>
+                        {categories.map((Categories: any) => (
+                            <TabsTrigger value={Categories.categoryName}>{Categories.categoryName}</TabsTrigger>
+                        ))}
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
                         {/* <DropdownMenu>
@@ -307,6 +331,12 @@ export default function Products() {
                                         <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" />
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
+                                        <Label htmlFor="calories" className="text-right col-span-2">
+                                            Calories
+                                        </Label>
+                                        <Input onChange={handleInputChange} id="calories" type="number" className="col-span-4" />
+                                    </div>
+                                    <div className="grid grid-cols-6 items-center gap-4">
                                         <Label htmlFor="price" className="text-right col-span-2">
                                             Price
                                         </Label>
@@ -316,7 +346,7 @@ export default function Products() {
                                         <Label htmlFor="description" className="text-right col-span-2">
                                             Description
                                         </Label>
-                                        <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" />
+                                        <Textarea onChange={handleTextareaChange} id="description" className="col-span-4" />
                                     </div>
                                 </div>
                                 <DialogFooter>
@@ -343,6 +373,7 @@ export default function Products() {
                                         <TableHead>Image</TableHead>
                                         <TableHead>Title</TableHead>
                                         <TableHead>Product Name</TableHead>
+                                        <TableHead>Calories</TableHead>
                                         <TableHead>Price</TableHead>
                                         <TableHead className="hidden md:table-cell">
                                             Decsription
@@ -370,7 +401,10 @@ export default function Products() {
                                             <TableCell className="font-medium">
                                                 {product.title}
                                             </TableCell>
-                                            <TableCell>{product.price}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {product.calories}
+                                            </TableCell>
+                                            <TableCell className="font-medium">{product.price}</TableCell>
                                             <TableCell className="hidden md:table-cell">
                                                 {product.description}
                                             </TableCell>
@@ -407,6 +441,95 @@ export default function Products() {
                         </CardFooter>
                     </Card>
                 </TabsContent>
+                {categories.map((Categories: any) => (
+                    <TabsContent value={Categories.categoryName}>
+                        <Card x-chunk="dashboard-06-chunk-0">
+                            <CardHeader>
+                                <CardTitle>Products</CardTitle>
+                                <CardDescription>
+                                    Manage your products and view their sales performance.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Image</TableHead>
+                                            <TableHead>Title</TableHead>
+                                            <TableHead>Product Name</TableHead>
+                                            <TableHead>Calories</TableHead>
+                                            <TableHead>Price</TableHead>
+                                            <TableHead className="hidden md:table-cell">
+                                                Decsription
+                                            </TableHead>
+                                            <TableHead>
+                                                <span className="sr-only">Actions</span>
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {products.map((product: any) => {
+                                            if (product.category.categoryName == Categories.categoryName) {
+                                                return (
+                                                    <TableRow key={product.id}>
+                                                        <TableCell className="hidden sm:table-cell">
+                                                            <Image
+                                                                alt="Product image"
+                                                                className="aspect-square rounded-md object-cover"
+                                                                height="32"
+                                                                src={product.image}
+                                                                width="32"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            {product.category.categoryName}
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            {product.title}
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            {product.calories}
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">{product.price}</TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            {product.description}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button
+                                                                        aria-haspopup="true"
+                                                                        size="icon"
+                                                                        variant="ghost"
+                                                                    // onClick={() => handleToggleMenuClick(product)}
+                                                                    >
+                                                                        <MoreHorizontal className="h-4 w-4" />
+                                                                        <span className="sr-only">Toggle menu</span>
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                                    <DropdownMenuItem onClick={() => handleEditClick(product)}>Edit</DropdownMenuItem>
+                                                                    <DropdownMenuItem onClick={() => handleDeleteClick(product)}>Delete</DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            }
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                            <CardFooter>
+                                <div className="text-xs text-muted-foreground">
+                                    Showing <strong>1-10</strong> of <strong>32</strong>{" "}
+                                    products
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                ))}
             </Tabs>
 
             <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
@@ -461,6 +584,12 @@ export default function Products() {
                             <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" defaultValue={product.title} />
                         </div>
                         <div className="grid grid-cols-6 items-center gap-4">
+                            <Label htmlFor="calories" className="text-right col-span-2">
+                                Calories
+                            </Label>
+                            <Input onChange={handleInputChange} id="calories" type="number" className="col-span-4" defaultValue={product.calories} />
+                        </div>
+                        <div className="grid grid-cols-6 items-center gap-4">
                             <Label htmlFor="price" className="text-right col-span-2">
                                 Price
                             </Label>
@@ -470,7 +599,7 @@ export default function Products() {
                             <Label htmlFor="description" className="text-right col-span-2">
                                 Description
                             </Label>
-                            <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" defaultValue={product.description} />
+                            <Textarea onChange={handleTextareaChange} id="description" className="col-span-4" defaultValue={product.description} />
                         </div>
                     </div>
                     <AlertDialogFooter>

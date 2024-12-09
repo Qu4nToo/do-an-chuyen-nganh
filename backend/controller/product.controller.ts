@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 // Tạo Product mới
 export const createProduct = async (req, res) => {
   try {
-    const { title, description, price, categoryID, image } = req.body;
+    const { title, description, calories, price, categoryID, image } = req.body;
 
     // Kiểm tra các trường bắt buộc
-    if (!title || !description || !price || !categoryID || !image) {
+    if (!title || !description || !calories || !price || !categoryID || !image) {
       return res.status(400).json({ error: 'Thiếu trường thông tin' });
     }
 
@@ -17,6 +17,7 @@ export const createProduct = async (req, res) => {
       data: {
         title,
         description,
+        calories,
         image,
         price,
         categoryID,
@@ -75,13 +76,14 @@ export const getProductById = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, price, categoryID, image } = req.body;
+    const { title, description, calories, price, categoryID, image } = req.body;
 
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
         title,
         description,
+        calories,
         price,
         image,
         categoryID,

@@ -65,164 +65,140 @@ import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 
 
-export default function Products() {
+export default function User() {
     const [file, setFile] = useState<File | null>(null);
-    const [products, setProducts] = useState([]);
-    const [product, setProduct] = useState<any>([]);
-    const [categories, setCategories] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [user, setUser] = useState<any>([]);
+    const [roles, setRoles] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
     const [showAlertEdit, setShowAlertEdit] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any>([]);
+    const [selectedUser, setSelectedUser] = useState<any>([]);
     const [isDialogOpen, setDialogOpen] = useState(false);
     const { toast } = useToast();
     let a;
-    const [newProduct, setNewProduct] = useState({
-        image: '',
-        categoryID: '',
-        title: '',
-        price: 0,
-        description: ''
+    const [newUser, setNewUser] = useState({
+        roleID: '',
+        name: '',
+        email: '',
+        passWord: ''
     });
     const handleInputChange2 = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { id, value } = e.target;
-
-        // Kiểm tra xem có phải là trường categoryName không
-        if (id === "id") {
-            setNewProduct((prev) => ({
-                ...prev,
-            }));
-        } else {
-            // Cập nhật các trường còn lại trong newProduct
-            setNewProduct((prev) => ({
-                ...prev,
-                [id]: value,
-            }));
-        }
-        console.log(newProduct);
+        setNewUser((prev) => ({
+            ...prev,
+            [id]: value,
+        }));
+        console.log(newUser);
     };
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, files } = e.target; // Lấy id và files từ target (input)
-        if (files && files[0]) {
-            const fileName = "/" + files[0].name; // Lấy tên file từ đối tượng file
-            console.log(fileName); // In ra tên tệp
-            // Nếu bạn muốn xử lý thêm, ví dụ như lưu vào state:
-            setNewProduct((prev) => ({
-                ...prev,
-                [id]: fileName, // Lưu tên file vào state
-            }));
-        }
-        // Nếu không phải file, xử lý giá trị text bình thường
-        if (id !== "image") {
-            const { value } = e.target;
-            setNewProduct((prev) => ({
-                ...prev,
-                [id]: value,
-            }));
-        }
-        console.log(newProduct);
+        const { id } = e.target;
+
+        const { value } = e.target;
+        setNewUser((prev) => ({
+            ...prev,
+            [id]: value,
+        }));
+        console.log(newUser);
     };
 
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/admin/product/get")
-            .then(products => setProducts(products.data))
+        axios.get("http://localhost:5000/api/admin/user/get")
+            .then(users => setUsers(users.data))
             .catch(err => console.log(err))
-        axios.get("http://localhost:5000/api/admin/category/get")
-            .then(categories => setCategories(categories.data))
+        axios.get("http://localhost:5000/api/admin/role/get")
+            .then(roles => setRoles(roles.data))
             .catch(err => console.log(err))
     }, []);
     // const handleToggleMenuClick = (product: React.SetStateAction<null>)=>{
     //     setSelectedProduct(product);
     //     a = selectedProduct;
     // }
-    const handleDeleteClick = (product: React.SetStateAction<null>) => {
-        setSelectedProduct(product);
+    const handleDeleteClick = (user: React.SetStateAction<null>) => {
+        setSelectedUser(user);
         setShowAlert(true);
     }
-    const handleEditClick = (product: any) => {
-        setProduct(product);
-        setNewProduct(product);
+    const handleEditClick = (user: any) => {
+        setUser(user);
+        setNewUser(user);
         setShowAlertEdit(true);
     }
     const handleAlertEditClose = () => {
         setShowAlertEdit(false);
-        setSelectedProduct(null);
     }
     const handleAlertClose = () => {
         setShowAlert(false);
-        setSelectedProduct(null);
+        setSelectedUser(null);
     }
     const handleConfirmEdit = () => {
-        axios.put(`http://localhost:5000/api/admin/product/update/${product.id}`, newProduct)
+        axios.put(`http://localhost:5000/api/admin/user/update/${user.id}`, newUser)
             .then(() => {
                 toast({
-                    title: "Product Edit",
-                    description: `Product has been edit.`,
+                    title: "User Edit",
+                    description: `User has been edit.`,
                 });
-                // Reload the products or update state after deletion
-                axios.get("http://localhost:5000/api/admin/product/get")
-                    .then((response) => setProducts(response.data))
-                    .catch((err) => console.error("Error fetching products:", err));
+                // Reload the users or update state after deletion
+                axios.get("http://localhost:5000/api/admin/user/get")
+                    .then((response) => setUsers(response.data))
+                    .catch((err) => console.error("Error fetching users:", err));
 
                 setShowAlert(false);  // Close the alert dialog
             })
             .catch((err) => {
-                console.error("Error deleting product:", err);
+                console.error("Error deleting user:", err);
                 toast({
                     title: "Edit Failed",
-                    description: `There was an error edit the product.`,
+                    description: `There was an error edit the user.`,
                     variant: "destructive",
                 });
             });
     }
     const handleConfirmDelete = () => {
-        // Make sure product.id is passed dynamically in the URL
-        if (selectedProduct) {
-            axios.delete(`http://localhost:5000/api/admin/product/delete/${selectedProduct.id}`)
+
+        if (selectedUser) {
+            axios.delete(`http://localhost:5000/api/admin/user/delete/${selectedUser.id}`)
                 .then(() => {
                     toast({
-                        title: "Product Deleted",
-                        description: `Product has been deleted.`,
+                        title: "User Deleted",
+                        description: `User has been deleted.`,
                     });
-                    // Reload the products or update state after deletion
-                    axios.get("http://localhost:5000/api/admin/product/get")
-                        .then((response) => setProducts(response.data))
-                        .catch((err) => console.error("Error fetching products:", err));
+                    axios.get("http://localhost:5000/api/admin/user/get")
+                        .then((response) => setUsers(response.data))
+                        .catch((err) => console.error("Error fetching users:", err));
 
                     setShowAlert(false);  // Close the alert dialog
                 })
                 .catch((err) => {
-                    console.error("Error deleting product:", err);
+                    console.error("Error deleting user:", err);
                     toast({
                         title: "Delete Failed",
-                        description: `There was an error deleting the product.`,
+                        description: `There was an error deleting the user.`,
                         variant: "destructive",
                     });
                 });
         }
     };
-    const handleCreateProduct = () => {
-        console.log(newProduct);
-        axios.post("http://localhost:5000/api/admin/product/create", newProduct)
+    const handleCreateUser = () => {
+        console.log(newUser);
+        axios.post("http://localhost:5000/api/admin/user/create", newUser)
             .then(() => {
                 toast({
-                    title: "Product Created",
-                    description: "New product has been added successfully.",
+                    title: "User Created",
+                    description: "New User has been added successfully.",
                 });
                 // Load lại danh sách sản phẩm
-                axios.get("http://localhost:5000/api/admin/product/get")
-                    .then((response) => setProducts(response.data))
-                    .catch((err) => console.error("Error fetching products:", err));
-                setNewProduct({
-                    image: '',
-                    categoryID: '',
-                    title: '',
-                    price: 0,
-                    description: ''
+                axios.get("http://localhost:5000/api/admin/user/get")
+                    .then((response) => setUsers(response.data))
+                    .catch((err) => console.error("Error fetching users:", err));
+                setNewUser({
+                    roleID: '',
+                    name: '',
+                    email: '',
+                    passWord: ''
                 });
                 setDialogOpen(false);
             })
-            .catch((err) => console.error("Error creating product:", err));
+            .catch((err) => console.error("Error creating userduct:", err));
     };
     return (
         <Admin>
@@ -230,97 +206,66 @@ export default function Products() {
                 <div className="flex items-center">
                     <TabsList>
                         <TabsTrigger value="all">All</TabsTrigger>
+                        {roles.map((roles: any) => (
+                            <TabsTrigger value={roles.roleName}>{roles.roleName}</TabsTrigger>
+                        ))}
                     </TabsList>
                     <div className="ml-auto flex items-center gap-2">
-                        {/* <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="h-7 gap-1">
-                                    <ListFilter className="h-3.5 w-3.5" />
-                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        Filter
-                                    </span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
-                                    Active
-                                </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Archived
-                                </DropdownMenuCheckboxItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu> */}
                         <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button size="sm" className="h-7 gap-1">
                                     <PlusCircle className="h-3.5 w-3.5" />
                                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        Add Product
+                                        Add User
                                     </span>
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
-                                    <DialogTitle>Add New Product</DialogTitle>
+                                    <DialogTitle>Add New User</DialogTitle>
                                     <DialogDescription>
-                                        Add new product to store catalog.
+                                        Add new User to store catalog.
                                     </DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-4 py-4">
-                                    <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="image" className="text-right col-span-2">
-                                            Image
-                                        </Label>
-                                        <Input onChange={handleInputChange} id="image" type="file" className="col-span-4" accept="Image/*" />
-                                    </div>
-                                    {/* <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="category" className="text-right col-span-2">
-                                            Title
-                                        </Label>
-                                        <Input onChange={handleInputChange} id="categoryID" type="text" className="col-span-4" />
-                                    </div> */}
 
                                     <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="categoryID" className="text-right col-span-2">
-                                            Category
+                                        <Label htmlFor="roleID" className="text-right col-span-2">
+                                            Role
                                         </Label>
                                         <select
-                                            id="categoryID"  // Đây là ID cho dropdown
+                                            id="roleID"  // Đây là ID cho dropdown
                                             onChange={handleInputChange2}  // Gọi handleInputChange khi có sự thay đổi
                                             className="col-span-4"
                                         >
-                                            <option value="">Select Category</option>
-                                            {categories.map((category: any) => (
+                                            <option value="">Select Role</option>
+                                            {roles.map((role: any) => (
                                                 <>
-                                                    <option key={category.id} value={category.id}>{category.categoryName}</option></>
+                                                    <option key={role.id} value={role.id}>{role.roleName}</option></>
                                             ))}
                                         </select>
                                     </div>
-
                                     <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="title" className="text-right col-span-2">
-                                            Product name
+                                        <Label htmlFor="name" className="text-right col-span-2">
+                                            User name
                                         </Label>
-                                        <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" />
+                                        <Input onChange={handleInputChange} id="name" type="text" className="col-span-4" />
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="price" className="text-right col-span-2">
-                                            Price
+                                        <Label htmlFor="email" className="text-right col-span-2">
+                                            Email
                                         </Label>
-                                        <Input onChange={handleInputChange} id="price" type="number" className="col-span-4" />
+                                        <Input onChange={handleInputChange} id="email" type="text" className="col-span-4" />
                                     </div>
                                     <div className="grid grid-cols-6 items-center gap-4">
-                                        <Label htmlFor="description" className="text-right col-span-2">
-                                            Description
+                                        <Label htmlFor="passWord" className="text-right col-span-2">
+                                            Password
                                         </Label>
-                                        <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" />
+                                        <Input onChange={handleInputChange} id="passWord" type="text" className="col-span-4" />
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button type="button" onClick={handleCreateProduct}>
+                                    <Button type="button" onClick={handleCreateUser}>
                                         Confirm
                                     </Button>
                                 </DialogFooter>
@@ -331,48 +276,40 @@ export default function Products() {
                 <TabsContent value="all">
                     <Card x-chunk="dashboard-06-chunk-0">
                         <CardHeader>
-                            <CardTitle>Products</CardTitle>
+                            <CardTitle>Alls</CardTitle>
                             <CardDescription>
-                                Manage your products and view their sales performance.
+                                Manage your users and view their sales performance.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Image</TableHead>
-                                        <TableHead>Title</TableHead>
-                                        <TableHead>Product Name</TableHead>
-                                        <TableHead>Price</TableHead>
-                                        <TableHead className="hidden md:table-cell">
-                                            Decsription
-                                        </TableHead>
+                                        <TableHead>Role</TableHead>
+                                        <TableHead>ID</TableHead>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Email</TableHead>
+                                        <TableHead>Password</TableHead>
                                         <TableHead>
                                             <span className="sr-only">Actions</span>
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {products.map((product: any) => (
-                                        <TableRow key={product.id}>
+                                    {users.map((users: any) => (
+                                        <TableRow key={users.id}>
                                             <TableCell className="hidden sm:table-cell">
-                                                <Image
-                                                    alt="Product image"
-                                                    className="aspect-square rounded-md object-cover"
-                                                    height="32"
-                                                    src={product.image}
-                                                    width="32"
-                                                />
+                                                {users.role.roleName}
                                             </TableCell>
                                             <TableCell className="font-medium">
-                                                {product.category.categoryName}
+                                                {users.id}
                                             </TableCell>
                                             <TableCell className="font-medium">
-                                                {product.title}
+                                                {users.name}
                                             </TableCell>
-                                            <TableCell>{product.price}</TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {product.description}
+                                            <TableCell>{users.email}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {users.passWord}
                                             </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
@@ -389,8 +326,8 @@ export default function Products() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                        <DropdownMenuItem onClick={() => handleEditClick(product)}>Edit</DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleDeleteClick(product)}>Delete</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleEditClick(users)}>Edit</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDeleteClick(users)}>Delete</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>
@@ -402,19 +339,96 @@ export default function Products() {
                         <CardFooter>
                             <div className="text-xs text-muted-foreground">
                                 Showing <strong>1-10</strong> of <strong>32</strong>{" "}
-                                products
+                                users
                             </div>
                         </CardFooter>
                     </Card>
                 </TabsContent>
-            </Tabs>
+                {roles.map((roles: any) => (
+                    <TabsContent value={roles.roleName}>
+                        <Card x-chunk="dashboard-06-chunk-0">
+                            <CardHeader>
+                                <CardTitle>{roles.roleName}</CardTitle>
+                                <CardDescription>
+                                    Manage your users and view their sales performance.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Role</TableHead>
+                                            <TableHead>ID</TableHead>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead>Email</TableHead>
+                                            <TableHead>Password</TableHead>
+                                            <TableHead>
+                                                <span className="sr-only">Actions</span>
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {users.map((users: any) => {
+                                            if (users.role.roleName == roles.roleName) {
+                                                return (
+                                                    <TableRow key={users.id}>
+                                                        <TableCell className="hidden sm:table-cell">
+                                                            {users.role.roleName}
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            {users.id}
+                                                        </TableCell>
+                                                        <TableCell className="font-medium">
+                                                            {users.name}
+                                                        </TableCell>
+                                                        <TableCell>{users.email}</TableCell>
+                                                        <TableCell className="font-medium">
+                                                            {users.passWord}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button
+                                                                        aria-haspopup="true"
+                                                                        size="icon"
+                                                                        variant="ghost"
+                                                                    // onClick={() => handleToggleMenuClick(product)}
+                                                                    >
+                                                                        <MoreHorizontal className="h-4 w-4" />
+                                                                        <span className="sr-only">Toggle menu</span>
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                                    <DropdownMenuItem onClick={() => handleEditClick(users)}>Edit</DropdownMenuItem>
+                                                                    <DropdownMenuItem onClick={() => handleDeleteClick(users)}>Delete</DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </TableCell>
+                                                    </TableRow>
 
+                                                )
+                                            }
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                            <CardFooter>
+                                <div className="text-xs text-muted-foreground">
+                                    Showing <strong>1-10</strong> of <strong>32</strong>{" "}
+                                    users
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                ))}
+            </Tabs>
             <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete this product?
+                            Are you sure you want to delete this user?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -428,49 +442,36 @@ export default function Products() {
             <AlertDialog open={showAlertEdit} onOpenChange={setShowAlertEdit}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Edit product</AlertDialogTitle>
+                        <AlertDialogTitle>Edit userduct</AlertDialogTitle>
                     </AlertDialogHeader>
                     <div className="grid gap-4 py-4">
-                        <Image className="mx-auto" src={product.image} alt={""} width={96} height={96} />
                         <div className="grid grid-cols-6 items-center gap-4">
-                            <Label htmlFor="image" className="text-right col-span-2">
-                                Image
-                            </Label>
-                            <Input onChange={handleInputChange} id="image" type="file" className="col-span-4" accept="Image/*" />
-                        </div>
-                        <div className="grid grid-cols-6 items-center gap-4">
-                            <Label htmlFor="categoryID" className="text-right col-span-2">
-                                Category
+                            <Label htmlFor="roleID" className="text-right col-span-2">
+                                Role
                             </Label>
                             <select
-                                id="categoryID"  // Đây là ID cho dropdown
+                                id="roleID"  // Đây là ID cho dropdown
                                 onChange={handleInputChange2}  // Gọi handleInputChange khi có sự thay đổi
                                 className="col-span-4"
                             >
-                                <option>{product.category?.categoryName || "No Category"}</option>
-                                {categories.filter((category: any) => category.id != product.categoryID).map((category: any) => (
-                                    <option key={category.id} value={category.id} > {category.categoryName}</option>
+                                <option>{user.role?.roleName || "No Role"}</option>
+                                {roles.filter((role: any) => role.id != user.roleID).map((role: any) => (
+                                    <option key={role.id} value={role.id} > {role.roleName}</option>
                                 ))}
                             </select>
                         </div>
 
                         <div className="grid grid-cols-6 items-center gap-4">
                             <Label htmlFor="title" className="text-right col-span-2">
-                                Product name
+                                User name
                             </Label>
-                            <Input onChange={handleInputChange} id="title" type="text" className="col-span-4" defaultValue={product.title} />
+                            <Input onChange={handleInputChange} id="name" type="text" className="col-span-4" defaultValue={user.name} />
                         </div>
                         <div className="grid grid-cols-6 items-center gap-4">
-                            <Label htmlFor="price" className="text-right col-span-2">
-                                Price
+                            <Label htmlFor="passWord" className="text-right col-span-2">
+                                Password
                             </Label>
-                            <Input onChange={handleInputChange} id="price" type="number" className="col-span-4" defaultValue={product.price} />
-                        </div>
-                        <div className="grid grid-cols-6 items-center gap-4">
-                            <Label htmlFor="description" className="text-right col-span-2">
-                                Description
-                            </Label>
-                            <Input onChange={handleInputChange} id="description" type="text" className="col-span-4" defaultValue={product.description} />
+                            <Input onChange={handleInputChange} id="passWord" type="text" className="col-span-4" defaultValue={user.passWord} />
                         </div>
                     </div>
                     <AlertDialogFooter>

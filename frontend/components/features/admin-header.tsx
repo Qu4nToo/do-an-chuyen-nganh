@@ -4,7 +4,6 @@ import { Button } from '../ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
 import { ModeToggle } from '../ui/mode-toggle'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
-import AdminSearch from './admin-search'
 import Link from 'next/link'
 import {
     Breadcrumb,
@@ -69,9 +68,7 @@ export default function AdminHeader() {
                     </nav>
                 </SheetContent>
             </Sheet>
-
             <div className="w-full flex-1">
-                <AdminSearch />
             </div>
             {/* <Breadcrumb className="hidden md:flex">
                 <BreadcrumbList>
@@ -92,7 +89,7 @@ export default function AdminHeader() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb> */}
-            <ModeToggle />
+            {/* <ModeToggle /> */}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="secondary" size="icon" className="rounded-full">
