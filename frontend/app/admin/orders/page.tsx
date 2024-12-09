@@ -294,7 +294,7 @@ export default function Orders() {
                             <DialogTitle>
                                 <div className="flex justify-start item-start space-y-1 flex-col ">
                                     <h1 className="text-3xl font-semibold leading-7 lg:leading-9  text-gray-800">#{order.id}</h1>
-                                    <p className="text-base font-medium leading-6 text-gray-600">{order.orderDate}</p>
+                                    <p className="text-base font-medium leading-6 text-gray-600">Order date: {order.orderDate}</p>
                                 </div>
                             </DialogTitle>
 
