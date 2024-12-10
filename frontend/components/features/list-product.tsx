@@ -1,12 +1,9 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { menu } from "@material-tailwind/react";
-import category from "./category";
-import { any } from "zod";
 import { useCart } from "./cart-context";
+import { useTitle } from "./TitleContext";
 
 
 interface MenuItem {
@@ -33,6 +30,7 @@ export function ListProduct() {
     // Loại bỏ ký hiệu "₫" mặc định
     return formatter.format(price).replace('₫', 'VND').trim();
   };
+  const { title} = useTitle();
   const [selectedTitle, setSelectedTitle] = useState<string>("ALL");
   const { addToCart } = useCart();
   const [categories, setCategories] = useState<any[]>([]);
@@ -41,39 +39,55 @@ export function ListProduct() {
 
   // Fetch dữ liệu khi component được mount
   useEffect(() => {
+    // Fetch dữ liệu sản phẩm
     axios
       .get("http://localhost:5000/api/admin/product/get")
       .then((response) => setProducts(response.data))
       .catch((err) => console.error("Error fetching products:", err));
-
+  
+    // Fetch dữ liệu danh mục
     axios
       .get("http://localhost:5000/api/admin/category/get")
       .then((response) => {
         setCategories(response.data);
-
-        // Khởi tạo menu từ danh mục sau khi tải xong
+  
+        // Tạo menu từ danh mục
         const initialMenu: MenuItem[] = [
           {
             id: "1",
             title: "ALL",
-            current: true, // Mặc định chọn "ALL"
+            current: title=="ALL",
           },
           ...response.data.map((category: any) => ({
             id: category.id,
             image: category.image,
             title: category.categoryName,
-            current: false,
+            current: category.categoryName==title,
           })),
         ];
         setMenu(initialMenu);
       })
       .catch((err) => console.error("Error fetching categories:", err));
-  }, []);
-
+  }, [title]);
+  
+  useEffect(() => {
+    // Cập nhật selectedTitle dựa trên giá trị của title
+    if (!title) {
+      setSelectedTitle("ALL");
+    } else {
+      setSelectedTitle(title);
+      setMenu((prevMenu) =>
+        prevMenu.map((item) => ({
+          ...item,
+          current: item.title === title,
+        }))
+      );
+    }
+  }, [title]); // Thêm title vào danh sách phụ thuộc
+  
   // Hàm xử lý sự kiện khi chọn danh mục
   const handleClick = (title: string) => {
     setSelectedTitle(title); // Cập nhật danh mục được chọn
-
     // Cập nhật trạng thái menu
     setMenu((prevMenu) =>
       (prevMenu || []).map((item) => ({
@@ -100,6 +114,10 @@ export function ListProduct() {
       image: item.image,
     };
     addToCart(cartItem);
+  }
+
+  function showTilte() {
+    console.log(title);
   }
 
   return (
@@ -149,7 +167,7 @@ export function ListProduct() {
                   </p>
                 </div>
                 <div className="flex gap-2 md:gap-5">
-                <Button
+                  <Button
                     onClick={() => handleAddToCart(item)} // Thêm sản phẩm vào giỏ
                     className=" bg-red-600 pl-4  hover:bg-orange-400 gap-0"
                   >
