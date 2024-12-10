@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/components/features/cart-context";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { CiCircleRemove } from "react-icons/ci";
+import { useTitle } from "./TitleContext";
+import { User } from "firebase/auth";
 
 
 function classNames(...classes: string[]) {
@@ -24,8 +26,9 @@ const navigation = [
 ];
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const { cart, removeFromCart } = useCart();
+  const {setTitle} = useTitle()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
@@ -79,6 +82,7 @@ export default function Navbar() {
               <div className="flex space-x-4 w-auto">
                 {navigation.map((item) => (
                   <Link
+                    onClick={()=>setTitle("ALL")}
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? "page" : undefined}

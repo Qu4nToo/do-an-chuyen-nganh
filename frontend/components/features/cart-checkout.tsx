@@ -55,7 +55,22 @@ const CheckoutPage = () => {
     return () => unsubscribe();
   }, []);
 
+  const formatPrice = (price: number): string => {
+    // Kiểm tra giá trị đầu vào
+    if (isNaN(price)) {
+      throw new Error("Giá trị không hợp lệ");
+    }
 
+    // Định dạng giá sử dụng Intl.NumberFormat
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0, // Không có phần thập phân
+    });
+
+    // Loại bỏ ký hiệu "₫" mặc định
+    return formatter.format(price).replace('₫', 'VND').trim();
+  };
   return (
     <div className="checkout-page flex flex-col items-center space-y-6 p-4 border mx-auto">
       <div className="p-3 md:py-10 md:px-40 w-auto border-2 border-black rounded-md">
@@ -115,19 +130,10 @@ const CheckoutPage = () => {
                   />
                   <div className="flex-1 ml-3">
                     <p className="text-sm font-semibold">{item.title}</p>
-                    <p className="text-xs text-gray-500">Price: {item.price} VNĐ</p>
+                    <p className="text-xs text-gray-500">Price: {formatPrice(item.price)} </p>
                     <p className="text-xs text-gray-500">Quantity: x{item.quantity}</p>
-                    <p className="text-xs text-gray-500">Total: {item.price * item.quantity} VNĐ</p>
+                    <p className="text-xs text-gray-500">Total: {formatPrice(item.price * item.quantity)}</p>
                   </div>
-                  <center>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-red-500"
-                    >
-                      <FaRegTrashAlt />
-                    </button>
-                  </center>
-
                 </li>
               )
             })}
@@ -135,7 +141,7 @@ const CheckoutPage = () => {
             <div className="mt-4 flex justify-between items-center">
               <span className="font-semibold">Total price:</span>
               <span className="font-semibold text-xl">
-                {total = cart.reduce((total, item) => total + item.price * item.quantity, 0)} VNĐ
+                {formatPrice(total = cart.reduce((total, item) => total + item.price * item.quantity, 0))}
               </span>
             </div>
           </ul>
@@ -173,7 +179,7 @@ const CheckoutPage = () => {
               </div>
             </div>
             <div className="mt-4 md:text-2xl">
-              <p>Tổng tiền: {total} VND</p>
+              <p>Tổng tiền: {formatPrice(total)}</p>
             </div>
 
             <Button

@@ -8,12 +8,38 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import ProductCard from "../ui/product-card";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import { useCart } from "./cart-context";
 
 export default function BestSeller() {
+
+  const { addToCart } = useCart();
+  function handleAddToCart(item: any): void {
+    const cartItem = {
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      quantity: 1, // Mặc định thêm 1 sản phẩm
+      image: item.image,
+    };
+    addToCart(cartItem);
+  }
+  const formatPrice = (price: number): string => {
+    // Kiểm tra giá trị đầu vào
+    if (isNaN(price)) {
+      throw new Error("Giá trị không hợp lệ");
+    }
+
+    // Định dạng giá sử dụng Intl.NumberFormat
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0, // Không có phần thập phân
+    });
+
+    // Loại bỏ ký hiệu "₫" mặc định
+    return formatter.format(price).replace('₫', 'VND').trim();
+  };
   const [products, setProducts] = useState<any[]>([]);
   useEffect(() => {
     axios
@@ -49,15 +75,15 @@ export default function BestSeller() {
                       {item.title}
                     </p>
                     <p className="mb-3 text-2xl font-normal text-yellow-400 dark:text-gray-400 text-center">
-                      {item.price} VND
+                      {formatPrice(item.price)}
                     </p>
                   </div>
                   <div className="flex gap-10 pb-5">
-                    <Button className=" bg-red-600 hover:bg-orange-400 rounded-full md:w-10 md:h-10 w-auto h-auto">
-                      <FontAwesomeIcon icon={faPlus} />
-                    </Button>
-                    <Button className=" bg-red-600 pl-4  hover:bg-orange-400 gap-0">
-                      <p className="text-xl font-bold">Buy Now</p>
+                    <Button
+                      onClick={() => handleAddToCart(item)} // Thêm sản phẩm vào giỏ
+                      className=" bg-red-600 pl-4  hover:bg-orange-400 gap-0"
+                    >
+                      <p className="text-xl font-bold">Add to Cart</p>
                     </Button>
                   </div>
                 </div>
