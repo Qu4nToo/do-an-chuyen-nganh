@@ -26,7 +26,7 @@ export function Login() {
         try {
             // Fetch user data by email from the backend
             const response = await fetch(`http://localhost:5000/api/admin/user/getByEmail/${email}`);
-            
+
             if (!response.ok) {
                 throw new Error('User not found');
             }
@@ -39,7 +39,11 @@ export function Login() {
             // Compare the hashed password with the stored password (which should also be hashed)
             if (user && hashedPassword === user.passWord) {
                 alert("Đăng nhập thành công!");
-                router.push('/');
+                if (user.role.roleName === "Admin") {
+                    router.push('/admin');
+                } else {
+                    router.push('/');
+                }
                 sessionStorage.setItem("user_info", JSON.stringify(user));
             } else {
                 setError('Invalid email or password');
@@ -76,7 +80,7 @@ export function Login() {
                         Đăng nhập
                     </Button>
                 </center>
-                
+
             </form>
             <center>
                 <p>Chưa có tài khoản ? <Link href="/register">Đăng ký</Link></p>
@@ -91,7 +95,7 @@ export function Sign() {
         id: string;
         roleName: string;
     }
-    
+
     const [newUser, setNewUser] = useState({
         roleID: '',
         name: '',
@@ -102,36 +106,36 @@ export function Sign() {
     const [roles, setRoles] = useState<Role[]>([]); // set to array of roles
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    
+
     useEffect(() => {
         axios
             .get("http://localhost:5000/api/admin/role/get")
             .then((response) => setRoles(response.data))
             .catch((err) => console.log(err));
     }, []);
-    
+
     // Handle input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-    
+
         // If roles are fetched, find the role with name 'User'
         const userRole = roles.find((role) => role.roleName === "User");
         const roleID = userRole ? userRole.id : ''; // Use the ID of the found role, or default to an empty string
-    
+
         setNewUser((prev) => ({
             ...prev,
             [name]: value,
             roleID, // Set the roleID here
         }));
-    
+
         console.log(newUser); // It's asynchronous, so this may not show the updated value immediately
     };
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log(newUser);
-        console.log("pass",newUser.passWord);
-        console.log("passcf",confirmPassword);
+        console.log("pass", newUser.passWord);
+        console.log("passcf", confirmPassword);
         if (newUser.passWord !== confirmPassword) {
             setError("Passwords do not match");
             return;
