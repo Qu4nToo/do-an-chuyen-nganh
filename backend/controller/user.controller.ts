@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import validator from 'validator';
+import { createHash } from 'crypto';
 const prisma = new PrismaClient();
 
 // Tạo người dùng mới
@@ -13,13 +14,17 @@ export const createUser = async (req, res) => {
     }
 
     if (!validator.isEmail(email)) {
-      return res.status(400).json({ error: 'Địa chỉ email không hợp lệ' });
+      return res.status(400).json({ error: 'Địa chỉ email không hợp lệ hoặc đã tồn tại' });
     }
 
+    // Mã hóa mật khẩu bằng SHA-3 (512 bit)
+    const hashedPassword = createHash('sha3-512').update(passWord).digest('hex');
+
+    // Lưu người dùng với mật khẩu đã mã hóa
     const newUser = await prisma.user.create({
       data: {
         name,
-        passWord,
+        passWord: hashedPassword,
         email,
         roleID,
       },
@@ -72,7 +77,26 @@ export const getUserById = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+export const getUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
 
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        role: true,
+        orders: true,
+      },
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'Không tim thấy User' });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
 // Cập nhật thông tin người dùng
 export const updateUser = async (req, res) => {
   try {
@@ -84,11 +108,12 @@ export const updateUser = async (req, res) => {
     if (!name || !passWord || !email || !roleID) {
       return res.status(400).json({ error: 'Thiếu trường dữ liệu' });
     }
+    const hashedPassword = createHash('sha3-512').update(passWord).digest('hex');
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
         name,
-        passWord,
+        passWord: hashedPassword,
         email,
         roleID,
       },

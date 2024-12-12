@@ -63,6 +63,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
+import { createDecipheriv } from "crypto"
 
 
 export default function User() {
@@ -289,7 +290,7 @@ export default function User() {
                                         <TableHead>ID</TableHead>
                                         <TableHead>Name</TableHead>
                                         <TableHead>Email</TableHead>
-                                        <TableHead>Password</TableHead>
+                                        <TableHead className="hidden">Password</TableHead>
                                         <TableHead>
                                             <span className="sr-only">Actions</span>
                                         </TableHead>
@@ -308,7 +309,7 @@ export default function User() {
                                                 {users.name}
                                             </TableCell>
                                             <TableCell>{users.email}</TableCell>
-                                            <TableCell className="font-medium">
+                                            <TableCell className="font-medium hidden">
                                                 {users.passWord}
                                             </TableCell>
                                             <TableCell>
@@ -382,7 +383,7 @@ export default function User() {
                                                             {users.name}
                                                         </TableCell>
                                                         <TableCell>{users.email}</TableCell>
-                                                        <TableCell className="font-medium">
+                                                        <TableCell className="font-medium ">
                                                             {users.passWord}
                                                         </TableCell>
                                                         <TableCell>

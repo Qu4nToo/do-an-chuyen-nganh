@@ -12,8 +12,8 @@ export default function MenuPage() {
     <main>
       <CartProvider>
         <TitleProvider>
-          <Navbar />
-          <ListProduct />
+          <Navbar/>
+          <ListProduct/>
           <Footer />
           <ChatBot />
         </TitleProvider>

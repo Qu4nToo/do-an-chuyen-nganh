@@ -28,26 +28,36 @@ const navigation = [
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const { cart, removeFromCart } = useCart();
-  const {setTitle} = useTitle()
+  const { setTitle } = useTitle()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
-
+  const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => setUser(currentUser));
-    return () => unsubscribe();
+    // Retrieve the user_info from sessionStorage
+    const storedUserInfo = sessionStorage.getItem("user_info");
+
+    if (storedUserInfo) {
+      // If user_info exists, parse it into an object
+      const user = JSON.parse(storedUserInfo);
+      setUserInfo(user);
+    }
   }, []);
+
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+
+      sessionStorage.removeItem("user_info");
       alert("Đăng xuất thành công!");
-      router.push("/"); // Điều hướng về trang chủ
+      window.location.reload(); 
+  
     } catch (error) {
       console.error("Error signing out: ", error);
       alert("Có lỗi xảy ra khi đăng xuất!");
     }
   };
+  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -82,7 +92,7 @@ export default function Navbar() {
               <div className="flex space-x-4 w-auto">
                 {navigation.map((item) => (
                   <Link
-                    onClick={()=>setTitle("ALL")}
+                    onClick={() => setTitle("ALL")}
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? "page" : undefined}
@@ -120,17 +130,17 @@ export default function Navbar() {
                 </MenuButton>
               </div>
               <MenuItems className="absolute right-1 z-10 mt-2 w-52 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
-                {user ? (
+                {userInfo ? (
                   <>
                     <MenuItem>
                       <span className="block px-4 py-2 text-sm text-gray-700">
-                        {user.displayName || "Name"}
+                        {userInfo.name || "Name"}
                       </span>
                     </MenuItem>
 
                     <MenuItem>
                       <span className="block px-4 py-2 text-sm text-gray-700">
-                        {user.email || "Email"}
+                        {userInfo.email || "Email"}
                       </span>
                     </MenuItem>
                     <MenuItem>
