@@ -37,22 +37,17 @@ const CheckoutPage = () => {
       alert("Đã xảy ra lỗi khi thanh toán. Vui lòng thử lại.");
     }
   };
-
-
-
+  const [userInfo, setUserInfo] = useState<any>(null);
   // Lấy sản phẩm từ API khi component mount
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserEmail(user.email);
-        setUserDisplayName(user.displayName);
-      } else {
-        setUserEmail(null);
-        setUserDisplayName(null);
-      }
-    });
+    // Retrieve the user_info from sessionStorage
+    const storedUserInfo = sessionStorage.getItem("user_info");
 
-    return () => unsubscribe();
+    if (storedUserInfo) {
+      // If user_info exists, parse it into an object
+      const user = JSON.parse(storedUserInfo);
+      setUserInfo(user);
+    }
   }, []);
 
   const formatPrice = (price: number): string => {
@@ -75,23 +70,40 @@ const CheckoutPage = () => {
     <div className="checkout-page flex flex-col items-center space-y-6 p-4 border mx-auto">
       <div className="p-3 md:py-10 md:px-40 w-auto border-2 border-black rounded-md">
         {/* Header */}
-          <div className="flex justify-center space-x-4">
-            <FaCartShopping className="text-4xl" />
-            <p className="font-bold text-4xl">MY CART</p>
-          </div>
+        <div className="flex justify-center space-x-4">
+          <FaCartShopping className="text-4xl" />
+          <p className="font-bold text-4xl">MY CART</p>
+        </div>
 
         {/* Billing Information */}
         <div className="w-full max-w-md">
           <h2 className="text-lg font-semibold mb-4">Billing Information</h2>
           <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" placeholder="Your Name" value={userdisplayName || ''} readOnly />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="Your Email" value={userEmail || ''} readOnly />
-            </div>
+            {userInfo ? (
+              <>
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" placeholder="Your Name" value={userInfo.name || ''} readOnly />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" placeholder="Your Email" value={userInfo.email || ''} readOnly />
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" placeholder="Your Name" />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" placeholder="Your Email" />
+                </div>
+              </>
+            )
+            }
+
             <div>
               <Label htmlFor="phone">Phone</Label>
               <Input
