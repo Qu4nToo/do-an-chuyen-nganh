@@ -38,7 +38,6 @@ export const createOrder = async (req, res) => {
 // Lấy danh sách các đơn hàng
 export const getOrders = async (req, res) => {
   try {
-    // Lấy tất cả các đơn hàng với thông tin người dùng, coupon, chi tiết đơn hàng
     const orders = await prisma.order.findMany({
       include: {
         user: true,          // Bao gồm thông tin người dùng
@@ -47,20 +46,18 @@ export const getOrders = async (req, res) => {
       },
     });
 
-    // Định dạng lại `orderDate` chỉ lấy phần ngày (YYYY-MM-DD)
+    // Chỉ giữ lại ngày, tháng, năm của `orderDate`
     const formattedOrders = orders.map(order => ({
       ...order,
-      orderDate: order.orderDate ? order.orderDate.toISOString().split('T')[0] : null,  // Đảm bảo `orderDate` không phải `null`
+      orderDate: order.orderDate.toISOString().split('T')[0], // Chỉ giữ lại YYYY-MM-DD
     }));
 
-    // Trả về danh sách đơn hàng đã được định dạng
     return res.status(200).json(formattedOrders);
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    console.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
-
 
 // Lấy đơn hàng theo ID
 export const getOrderById = async (req, res) => {
