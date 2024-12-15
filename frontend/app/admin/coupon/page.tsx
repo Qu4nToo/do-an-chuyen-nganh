@@ -246,6 +246,7 @@ export default function Products() {
     };
     return (
         <Admin>
+            <title>Coupon</title>
             <Tabs defaultValue="all">
                 <div className="flex items-center">
                     <TabsList>

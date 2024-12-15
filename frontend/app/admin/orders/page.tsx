@@ -96,21 +96,18 @@ export default function Orders() {
         console.log(orderStatus);
     };
     function handleViewClick(orders: any) {
-        
         console.log(orders);
         setOrder(orders);
         const filteredOrderDetail = orderDetail.filter((detail: any) => detail.orderID === orders.id);
         setOrderDetailFilter(filteredOrderDetail);
         setShowView(true);
     }
-
-    
     function handleEditClick(orders: any) {
         setShowAlertEdit(true);
         console.log(orders);
         setOrder(orders);
         setOrderStatus(orders);
-
+ 
     }
     const handleAlertEditClose = () => {
         setShowAlertEdit(false);
@@ -140,10 +137,10 @@ export default function Orders() {
                 });
             });
     }
-    
 
     return (
         <Admin>
+            <title>Order</title>
             <Tabs defaultValue="all">
 
                 <TabsList>
@@ -319,28 +316,37 @@ export default function Orders() {
                                                 </TableHeader>
                                                 <TableBody>
                                                     {Array.isArray(orderDetailFilter) && orderDetailFilter.map((item: any) => {
-                                                        const subtotal = item.price * item.quantity;
+                                                        const subtotal = item?.product?.price * item?.quantity || 0;
                                                         total += subtotal;
                                                         return (
-                                                            <TableRow className="bg-white" key={item.productID}>
+                                                            <TableRow className="bg-white">
                                                                 <TableCell>
                                                                     <div className="pb-4 w-24">
                                                                         <img
                                                                             className="w-full hidden md:block"
-                                                                            src={item.image}
-                                                                            alt={item.title}
+                                                                            src={item.product.image}
+                                                                            alt="product image"
                                                                         />
                                                                     </div>
                                                                 </TableCell>
-                                                                <TableCell>{item.title}</TableCell>
-                                                                <TableCell>{formatPrice(item.price)}</TableCell>
-                                                                <TableCell>{item.quantity}</TableCell>
-                                                                <TableCell>{formatPrice(subtotal)}</TableCell>
+                                                                <TableCell>
+                                                                    <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">{item.product.title}</p>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">
+                                                                        {formatPrice(item.product.price)}
+                                                                    </p>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">{item.quantity}</p>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <p className="text-base xl:text-lg font-semibold leading-6 text-gray-800">{formatPrice(subtotal)}</p>
+                                                                </TableCell>
                                                             </TableRow>
-                                                        );
+                                                        )
                                                     })}
                                                 </TableBody>
-
                                             </ScrollArea>
                                         </Table>
 
@@ -433,7 +439,7 @@ export default function Orders() {
                                     className="col-span-4"
                                 >
                                     <option>{order.status || "No Status"}</option>
-                                    {Object.values(Status).filter((status: any) => status != order.status).map((status: any) => (
+                                    {Object.values(Status).filter((status: any) =>status != order.status ).map((status: any) => (
                                         <option key={status} value={status} > {status}</option>
                                     ))}
                                 </select>

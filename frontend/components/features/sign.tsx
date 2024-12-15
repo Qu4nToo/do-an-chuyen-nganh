@@ -5,8 +5,6 @@ import Enter from "@/components/features/google";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { auth } from '@/app/firebase/config';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -40,16 +38,18 @@ export function Login() {
             if (user && hashedPassword === user.passWord) {
                 alert("Đăng nhập thành công!");
                 if (user.role.roleName === "Admin") {
+                    sessionStorage.setItem("user_info", JSON.stringify(user));
                     router.push('/admin');
                 } else {
+                    sessionStorage.setItem("user_info", JSON.stringify(user));
                     router.push('/');
                 }
-                sessionStorage.setItem("user_info", JSON.stringify(user));
+                
             } else {
-                setError('Invalid email or password');
+                alert('Invalid password');
             }
         } catch (error: any) {
-            setError(error.message); // Handle errors like user not found, server issues, etc.
+            alert('Invalid email');
         }
     };
 
@@ -149,11 +149,8 @@ export function Sign() {
                 description: "New User has been added successfully.",
             });
 
-            // Reset form
-
             setConfirmPassword('');
 
-            // Register user with Firebase
             setNewUser({
                 name: '',
                 email: '',

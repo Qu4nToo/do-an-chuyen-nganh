@@ -10,6 +10,7 @@ import { TitleProvider } from "@/components/features/TitleContext";
 export default function MenuPage() {
   return (
     <main>
+      <title>Checkout</title>
       <CartProvider>
         <TitleProvider>
           <Navbar />

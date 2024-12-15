@@ -22,7 +22,7 @@ export default function Dashboard() {
     return (
         <Admin>
             <Card>
-                
+                <title>Dashboard</title>
             </Card>
         </Admin>
     )

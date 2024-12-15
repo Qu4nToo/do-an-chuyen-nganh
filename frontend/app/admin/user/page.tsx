@@ -203,6 +203,7 @@ export default function User() {
     };
     return (
         <Admin>
+            <title>User</title>
             <Tabs defaultValue="all">
                 <div className="flex items-center">
                     <TabsList>
@@ -277,7 +278,7 @@ export default function User() {
                 <TabsContent value="all">
                     <Card x-chunk="dashboard-06-chunk-0">
                         <CardHeader>
-                            <CardTitle>Alls</CardTitle>
+                            <CardTitle>All</CardTitle>
                             <CardDescription>
                                 Manage your users and view their sales performance.
                             </CardDescription>

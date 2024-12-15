@@ -192,6 +192,7 @@ export default function Category() {
     };
     return (
         <Admin>
+            <title>Category</title>
             <Tabs defaultValue="all">
                 <div className="flex items-center">
                     <TabsList>
