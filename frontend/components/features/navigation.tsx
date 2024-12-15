@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "@/app/firebase/config";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
@@ -9,9 +7,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/components/features/cart-context";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { CiCircleRemove } from "react-icons/ci";
 import { useTitle } from "./TitleContext";
-import { User } from "firebase/auth";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaMinusCircle } from "react-icons/fa";
 import { LiaCartPlusSolid } from "react-icons/lia";
@@ -23,13 +19,12 @@ function classNames(...classes: string[]) {
 
 const navigation = [
   { name: "Home", href: "/", current: false },
-  { name: "Menu", href: "/menu", current: false },
   { name: "About", href: "/about", current: false },
+  { name: "Menu", href: "/menu", current: false },
   { name: "Contact", href: "/contact", current: false },
 ];
 
 export default function Navbar() {
-  const [user, setUser] = useState<User | null>(null);
   const { setTitle } = useTitle()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
@@ -54,6 +49,7 @@ export default function Navbar() {
     try {
 
       sessionStorage.removeItem("user_info");
+      localStorage.removeItem("cart");
       alert("Đăng xuất thành công!");
       window.location.reload();
 
@@ -108,6 +104,7 @@ export default function Navbar() {
                         : "text-white hover:bg-white hover:text-gray-700",
                       "rounded-md px-3 py-2 font-semibold lg:text-lg text-md"
                     )}
+                    onClick={() => setTitle("ALL")}
                   >
                     {item.name}
                   </Link>
@@ -135,7 +132,7 @@ export default function Navbar() {
                 <MenuButton className="relative flex rounded-full bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <img
                     alt=""
-                    src={user?.photoURL || "/user.png"}
+                    src= "/user.png"
                     className="h-8 w-8 rounded-full"
                   />
                 </MenuButton>

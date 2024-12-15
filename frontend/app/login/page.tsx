@@ -10,6 +10,7 @@ import { Login,RSign } from '@/components/features/sign';
 export default function Home() {
   return (
     <main className="bg-[#FF9D00] h-screen flex items-center justify-center p-10">
+      <title>Login</title>
       <div className="grid w-full h-full grid-cols-1 bg-white box-anim md:grid-cols-2">
         <div className="bg-white text-black flex items-center justify-center flex-col">
           <div className="my-4">

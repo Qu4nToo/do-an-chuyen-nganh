@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/components/features/cart-context';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { toast } from '../ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 const CheckoutPage = () => {
   const [userInfo, setUserInfo] = useState({
@@ -15,6 +16,7 @@ const CheckoutPage = () => {
   });
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const router = useRouter();
   const [notice, setNotice] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('internetBanking');
   const { cart, removeFromCart } = useCart();
@@ -43,24 +45,25 @@ const CheckoutPage = () => {
         variant: 'destructive',
       });
       return;
-    }
-
+    }   
+    console.log(userInfo);
     setLoading(true);
 
     try {
       // Step 1: Create the order and get the orderID
       const orderResponse = await axios.post('http://localhost:5000/api/admin/order/create', {
-        userID: userInfo.id,
         status: 'Pending',
         address,
         phone,
         notice: notice || 'No notice',
         orderDate: new Date().toISOString(),
+        userID: userInfo.id,
+        paymentMethod: selectedMethod,
         totalAmount,
       });
 
       if (orderResponse.status === 200) {
-        const orderID = orderResponse.data.; // Get the orderID from the response
+        const orderID = orderResponse.data.id; // Get the orderID from the response
 
         // Save orderID in sessionStorage
         sessionStorage.setItem('orderID', orderID);
@@ -81,7 +84,8 @@ const CheckoutPage = () => {
           variant: 'destructive',
         });
       }
-    } catch (error) {
+
+    } catch (error : any) {
       console.error('Error details:', error.response?.data); // Log the error response
       toast({
         title: 'Error',
@@ -93,7 +97,7 @@ const CheckoutPage = () => {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout1 = async () => {
     if (!isOrderSaved) {
       toast({
         title: 'Error',
@@ -145,7 +149,94 @@ const CheckoutPage = () => {
           variant: 'destructive',
         });
       }
-    } catch (error) {
+
+      try {
+        // Gọi API để tạo payment URL
+        const response = `http://localhost:5000/order/create_payment_url?amount=${totalAmount}`
+
+        // Kiểm tra nếu API trả về paymentUrl
+        const paymentUrl = response;
+
+        if (paymentUrl) {
+          // Chuyển hướng người dùng đến paymentUrl
+          window.location.href = paymentUrl;  // Chuyển hướng tới URL thanh toán
+        } else {
+          console.log(paymentUrl);
+          alert("Có lỗi xảy ra khi tạo URL thanh toán.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+        alert("Đã xảy ra lỗi khi thanh toán. Vui lòng thử lại.");
+      }
+
+    } catch (error :any) {
+      console.error('Error details:', error.response?.data); // Log the error response
+      toast({
+        title: 'Error',
+        description: error.response?.data?.error || 'An error occurred.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleCheckout2 = async () => {
+    if (!isOrderSaved) {
+      toast({
+        title: 'Error',
+        description: 'Please save the order first.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Retrieve the orderID from sessionStorage
+      const orderID = sessionStorage.getItem('orderID');
+      if (!orderID) {
+        toast({
+          title: 'Error',
+          description: 'Order ID is missing.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Step 2: Create order details using the orderID
+      const orderDetailsPromises = cart.map((item) => {
+        return axios.post('http://localhost:5000/api/admin/orderdetail/create', {
+          orderID: orderID,  // Pass the orderID here
+          productID: item.id,
+          totalPrice: item.price * item.quantity,
+          quantity: item.quantity,
+        });
+      });
+
+      // Wait for all order details to be created
+      const detailsResponses = await Promise.all(orderDetailsPromises);
+
+      // Step 3: Check if all order details were successfully created
+      const allSuccess = detailsResponses.every(response => response.status === 200);
+      if (allSuccess) {
+        toast({
+          title: 'Success',
+          description: 'Order created successfully with all details!',
+          variant: 'default',
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Some order details failed to save.',
+          variant: 'destructive',
+        });
+      }
+      localStorage.removeItem("cart");
+      router.push('/');
+      alert("Đặt hàng thành công");
+
+    } catch (error: any) {
       console.error('Error details:', error.response?.data); // Log the error response
       toast({
         title: 'Error',
@@ -160,8 +251,8 @@ const CheckoutPage = () => {
   // Create progress steps based on currentStep value
   const renderProgressSteps = () => {
     const steps = [
-      { label: 'Giỏ hàng', completed: currentStep >= 1 },
-      { label: 'Thông tin đặt hàng', completed: currentStep >= 2 },
+      { label: 'Nhập thông tin', completed: currentStep >= 1 },
+      { label: 'Xác nhận', completed: currentStep >= 2 },
       { label: 'Thanh toán', completed: currentStep >= 3 },
     ];
 
@@ -207,6 +298,7 @@ const CheckoutPage = () => {
                   placeholder="Your Phone Number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  readOnly={isOrderSaved} // Make readonly if order is saved
                 />
               </div>
               <div>
@@ -216,6 +308,7 @@ const CheckoutPage = () => {
                   placeholder="Your Address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                  readOnly={isOrderSaved} // Make readonly if order is saved
                 />
               </div>
               <div>
@@ -225,6 +318,7 @@ const CheckoutPage = () => {
                   placeholder="Your Notice"
                   value={notice}
                   onChange={(e) => setNotice(e.target.value)}
+                  readOnly={isOrderSaved} // Make readonly if order is saved
                 />
               </div>
             </div>
@@ -241,6 +335,7 @@ const CheckoutPage = () => {
                   <img src={item.image} className="w-12 h-12 object-cover" alt={item.title} />
                   <div className="flex-1 ml-3">
                     <p className="text-sm font-semibold">{item.title}</p>
+                    <p className="text-sm font-semibold">Quantity: {item.quantity}</p>
                     <div className="text-s text-amber-500 font-semibold">
                       {(item.price * item.quantity).toLocaleString('vi-VN')} VNĐ
                     </div>
@@ -311,16 +406,24 @@ const CheckoutPage = () => {
                   onClick={handleSaveOrder}
                   disabled={loading}
                 >
-                  {loading ? 'Saving...' : 'Save Order'}
+                  {loading ? 'Saving...' : 'Next'}
                 </Button>
-              ) : (
+              ) : selectedMethod === 'internetBanking' ? (
                 <Button
                   className="bg-black text-white mt-5 mb-4 font-bold w-96 hover:bg-white hover:text-black"
-                  onClick={handleCheckout}
+                  onClick={handleCheckout1}
                   disabled={loading}
                 >
                   {loading ? 'Processing...' : 'Checkout'}
                 </Button>
+              ) : (
+                <Button
+                className="bg-black text-white mt-5 mb-4 font-bold w-96 hover:bg-white hover:text-black"
+                onClick={handleCheckout2}
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : 'Checkout'}
+              </Button>
               )}
             </div>
           </div>
