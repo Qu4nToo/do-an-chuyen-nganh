@@ -12,6 +12,9 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { CiCircleRemove } from "react-icons/ci";
 import { useTitle } from "./TitleContext";
 import { User } from "firebase/auth";
+import { FaPlusCircle } from "react-icons/fa";
+import { FaMinusCircle } from "react-icons/fa";
+import { LiaCartPlusSolid } from "react-icons/lia";
 
 
 function classNames(...classes: string[]) {
@@ -20,18 +23,20 @@ function classNames(...classes: string[]) {
 
 const navigation = [
   { name: "Home", href: "/", current: false },
-  { name: "About", href: "/about", current: false },
   { name: "Menu", href: "/menu", current: false },
-  { name: "Contact", href: "/about", current: false },
+  { name: "About", href: "/about", current: false },
+  { name: "Contact", href: "/contact", current: false },
 ];
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
-  const { cart, removeFromCart } = useCart();
   const { setTitle } = useTitle()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
   const [userInfo, setUserInfo] = useState<any>(null);
+  const { cart, removeFromCart, updateCartItemQuantity } = useCart();
+
+
 
   useEffect(() => {
     // Retrieve the user_info from sessionStorage
@@ -50,14 +55,14 @@ export default function Navbar() {
 
       sessionStorage.removeItem("user_info");
       alert("Đăng xuất thành công!");
-      window.location.reload(); 
-  
+      window.location.reload();
+
     } catch (error) {
       console.error("Error signing out: ", error);
       alert("Có lỗi xảy ra khi đăng xuất!");
     }
   };
-  
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -68,10 +73,12 @@ export default function Navbar() {
   };
 
 
+
+
   return (
     <Disclosure
       as="nav"
-      className="bg-white border-solid border-b-2 border-black h-auto sticky top-0 z-10"
+      className="bg-gradient-to-r from-[#FFA008] to-[#FF6F00] border-solid border-b-2 border-black h-auto sticky top-0 z-10"
     >
       <div className="container max-w-full px-2 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-auto">
@@ -84,7 +91,7 @@ export default function Navbar() {
           </div>
           <div className="flex flex-1 items-center justify-center sm:justify-start h-auto">
             <div className="flex flex-shrink-0 items-center lg:ml-10 lg:mr-20 md:mr-auto md:ml-5 mr-5 ml-3">
-              <Link href="#">
+              <Link href="/">
                 <img alt="Your Company" src="/logo.png" className="h-20 w-auto" />
               </Link>
             </div>
@@ -92,14 +99,13 @@ export default function Navbar() {
               <div className="flex space-x-4 w-auto">
                 {navigation.map((item) => (
                   <Link
-                    onClick={() => setTitle("ALL")}
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? "page" : undefined}
                     className={classNames(
                       item.current
                         ? "text-orange-500 hover:bg-gray-700 hover:text-white"
-                        : "text-black hover:bg-gray-700 hover:text-white",
+                        : "text-white hover:bg-white hover:text-gray-700",
                       "rounded-md px-3 py-2 font-semibold lg:text-lg text-md"
                     )}
                   >
@@ -110,13 +116,18 @@ export default function Navbar() {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center gap-2 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-
             <button
               type="button"
               onClick={toggleSidebar}
               className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
             >
-              <FontAwesomeIcon icon={faCartShopping} className="h5 w-6" />
+              <FontAwesomeIcon icon={faCartShopping} className="h-5 w-6" />
+              {/* Display the cart item count */}
+              {cart.length > 0 && (
+                <span className="absolute top-[-14px] right-[-9px] text-xs text-white bg-red-500 rounded-full px-2 py-1">
+                  {cart.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              )}
             </button>
 
             <Menu as="div" className="relative ml-3">
@@ -192,62 +203,98 @@ export default function Navbar() {
               </button>
             </div>
             <div className="px-4 py-2">
-              {/* chỗ sẽ xuất hiện danh sách sản phẩm đã thêm vào gio */}
-            </div>
-            <center>
-              <div className="p-4">
+              {cart.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                  <p className="text-lg font-semibold">Your cart is empty
+                    <center > <LiaCartPlusSolid className="size-32" /></center>
+                  </p>
+                  <Link href="/menu">
+                    <button className="bg-gradient-to-r from-[#FFA008] to-[#FF6F00] mt-4 text-white font-bold py-2 px-4 rounded">
+                      Explore Menu
+                    </button>
+                  </Link>
+                </div>
+              ) : (
                 <ul>
                   {cart.map((item) => (
                     <li
                       key={item.id}
-                      className="flex justify-between items-center py-2"
+                      className="flex justify-between items-center py-2 border border-gray-300 rounded-lg shadow-md p-3 mb-2"
                     >
                       <img
                         src={item.image}
                         className="w-12 h-12 object-cover"
                       />
                       <div className="flex-1 ml-3">
-                        <p className="text-sm font-semibold">{item.title}</p>
-                        <p className="text-xs text-gray-500">
-                          Đơn giá: {item.price} VNĐ
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Số lượng: x{item.quantity}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Giá tổng: {item.price * item.quantity}   VNĐ
+                        <center><p className="text-sm font-semibold">{item.title}</p></center>
+                        <p>
+                          <center>
+                          <div className="text-s text-amber-500 font-semibold">
+                            {(item.price * item.quantity).toLocaleString("vi-VN")} VNĐ
+                          </div>
+                          </center>
+                          <center>
+                            <div className="flex items-center justify-center space-x-4">
+                              <button
+                                onClick={() => {
+                                  if (item.quantity > 1) {
+                                    updateCartItemQuantity(item.id, item.quantity - 1);
+                                  } else {
+                                    removeFromCart(item.id);
+                                  }
+                                }}
+                                className="text-red-500 text-lg"
+                              >
+                                <FaMinusCircle />
+                              </button>
+                              <span className="border border-gray-300 rounded-md px-3.5 py-1 text-lg font-semibold">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() => updateCartItemQuantity(item.id, item.quantity + 1)}
+                                className="text-red-500 text-lg"
+                              >
+                                <FaPlusCircle />
+                              </button>
+                            </div>
+
+                          </center>
                         </p>
                       </div>
-                      <center>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-red-500"
-                        >
-                          <FaRegTrashAlt />
-                        </button>
-                      </center>
-
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-red-500"
+                      >
+                        <FaRegTrashAlt />
+                      </button>
                     </li>
                   ))}
                 </ul>
-                <div><hr /></div>
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="font-semibold">Total price:</span>
-                  <span className="font-semibold text-xl">
-                    {cart.reduce((total, item) => total + item.price * item.quantity, 0)} VNĐ
-                  </span>
+              )}
+            </div>
+            {cart.length > 0 && (
+              <center>
+                <div className="p-4">
+                  <div className="mt-4 flex justify-between items-center border border-gray-300 rounded-lg shadow-md p-3 mb-2">
+                    <span className="font-semibold">Total price:</span>
+                    <span className="font-semibold text-xl">
+                      {cart.reduce((total, item) => total + item.price * item.quantity, 0).toLocaleString("vi-VN")} VNĐ
+                    </span>
+                  </div>
+                  <Link href="/cart">
+                    <button
+                      className="bg-gradient-to-r from-[#FFA008] to-[#FF6F00] mt-6 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Check out
+                    </button>
+                  </Link>
                 </div>
-                <Link href="/cart">
-                  <button
-                    className="bg-gradient-to-r from-[#FFA008] to-[#FF6F00] mt-6 text-white font-bold py-2 px-4 rounded" >
-                    Check out
-                  </button>
-                </Link>
-              </div>
-            </center>
+              </center>
+            )}
           </div>
         </div>
       )}
+
     </Disclosure>
   );
 }
