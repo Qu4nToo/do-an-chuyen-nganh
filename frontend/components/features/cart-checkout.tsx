@@ -60,7 +60,7 @@ const CheckoutPage = () => {
       });
 
       if (orderResponse.status === 200) {
-        const orderID = orderResponse.data.; // Get the orderID from the response
+        const orderID = orderResponse.data.ID; // Get the orderID from the response
 
         // Save orderID in sessionStorage
         sessionStorage.setItem('orderID', orderID);
