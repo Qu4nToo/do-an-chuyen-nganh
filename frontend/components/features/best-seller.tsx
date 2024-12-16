@@ -19,25 +19,22 @@ export default function BestSeller() {
       id: item.id,
       title: item.title,
       price: item.price,
-      quantity: 1, // Mặc định thêm 1 sản phẩm
+      quantity: 1, 
       image: item.image,
     };
     addToCart(cartItem);
   }
   const formatPrice = (price: number): string => {
-    // Kiểm tra giá trị đầu vào
     if (isNaN(price)) {
       throw new Error("Giá trị không hợp lệ");
     }
 
-    // Định dạng giá sử dụng Intl.NumberFormat
     const formatter = new Intl.NumberFormat('vi-VN', {
       style: 'currency',
       currency: 'VND',
-      maximumFractionDigits: 0, // Không có phần thập phân
+      maximumFractionDigits: 0, 
     });
 
-    // Loại bỏ ký hiệu "₫" mặc định
     return formatter.format(price).replace('₫', 'VND').trim();
   };
   const [products, setProducts] = useState<any[]>([]);
@@ -80,7 +77,7 @@ export default function BestSeller() {
                   </div>
                   <div className="flex gap-10 pb-5">
                     <Button
-                      onClick={() => handleAddToCart(item)} // Thêm sản phẩm vào giỏ
+                      onClick={() => handleAddToCart(item)}
                       className=" bg-red-600 pl-4  hover:bg-orange-400 gap-0"
                     >
                       <p className="text-xl font-bold">Add to Cart</p>

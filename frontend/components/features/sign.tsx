@@ -43,16 +43,18 @@ export function Login() {
             if (user && hashedPassword === user.passWord) {
                 alert("Đăng nhập thành công!");
                 if (user.role.roleName === "Admin") {
+                    sessionStorage.setItem("user_info", JSON.stringify(user));
                     router.push('/admin');
                 } else {
+                    sessionStorage.setItem("user_info", JSON.stringify(user));
                     router.push('/');
                 }
-                sessionStorage.setItem("user_info", JSON.stringify(user));
+
             } else {
-                setError('Invalid email or password');
+                alert('Invalid password');
             }
         } catch (error: any) {
-            setError(error.message); // Handle errors like user not found, server issues, etc.
+            alert('Invalid email');
         }
     };
 

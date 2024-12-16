@@ -188,7 +188,7 @@ export default function Orders() {
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">{orders.orderDate}</TableCell>
                                             <TableCell className="">{formatPrice(orders.totalAmount)}</TableCell>
-                                            <TableCell className="">{orders.paymentMethod}</TableCell>
+                                            <TableCell className="">{(orders.paymentMethod=='internetBanking') ? "Banking" : "Cod"}</TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>

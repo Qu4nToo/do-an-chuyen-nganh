@@ -124,7 +124,7 @@ export default function OrderView() {
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">{orders.orderDate}</TableCell>
                                             <TableCell className="">{formatPrice(orders.totalAmount)}</TableCell>
-                                            <TableCell className="">{orders.paymentMethod}</TableCell>
+                                            <TableCell className="">{(orders.paymentMethod=='internetBanking') ? "Banking" : "Cod"}</TableCell>
                                             <TableCell>
                                                 <Button
                                                     aria-haspopup="true"
@@ -220,7 +220,7 @@ export default function OrderView() {
                                     <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 space-y-6   ">
                                         <div className="flex justify-between items-center w-full">
                                             <h3 className="text-xl font-semibold leading-5 text-gray-800">Payment method</h3>
-                                            <h3 className="text-xl font-semibold leading-5 text-gray-800">{order.paymentMethod}</h3>
+                                            <h3 className="text-xl font-semibold leading-5 text-gray-800">{(order.paymentMethod=='internetBanking') ? "Banking" : "Cod"}</h3>
                                         </div>
                                         <div className="flex justify-center items-center w-full  flex-col border-gray-200 border-b pb-4">
                                             {/* <div className="flex justify-between items-center w-full">

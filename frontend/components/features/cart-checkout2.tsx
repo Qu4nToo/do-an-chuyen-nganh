@@ -12,7 +12,7 @@ const OrderDetailsPage = () => {
 
   useEffect(() => {
     if (!orderID) {
-      router.push('/'); // Redirect to homepage if no orderID
+      router.push('/'); 
     }
   }, [orderID, router]);
 
