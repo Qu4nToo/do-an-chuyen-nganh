@@ -1,24 +1,19 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Image from 'next/image';
+import { Login, RSign } from '@/components/features/sign';
 import Link from 'next/link';
-import { FcGoogle } from 'react-icons/fc';
-import { FaFacebook } from "react-icons/fa";
-import { Login,RSign } from '@/components/features/sign';
-
+import { FaArrowLeft } from 'react-icons/fa';
 export default function Home() {
   return (
     <main className="bg-[#FF9D00] h-screen flex items-center justify-center p-10">
       <title>Login</title>
-      <div className="grid w-full h-full grid-cols-1 bg-white box-anim md:grid-cols-2">
+      <div className="grid w-full h-full grid-cols-1 bg-white box-anim lg:grid-cols-2">
         <div className="bg-white text-black flex items-center justify-center flex-col">
-          <div className="my-4">
-          </div>
-          <div><Login/></div>
+          <Link href="/" className="absolute top-10 left-10">
+            <FaArrowLeft size={30} /> {/* Thay đổi kích thước icon tại đây */}
+          </Link>
+          <div><Login /></div>
         </div>
-        <div className="relative hidden md:block">
-        <div><RSign/></div>
+        <div className="relative hidden lg:block">
+          <div><RSign /></div>
         </div>
       </div>
     </main>

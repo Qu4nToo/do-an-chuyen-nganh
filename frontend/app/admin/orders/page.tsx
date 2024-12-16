@@ -151,7 +151,6 @@ export default function Orders() {
                         </TabsTrigger>
                     ))}
                 </TabsList>
-
                 <TabsContent value="all">
                     <Card>
                         <CardHeader className="px-7">

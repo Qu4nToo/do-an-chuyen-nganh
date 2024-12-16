@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { Disclosure, DisclosureButton, Menu, MenuButton, MenuItem, MenuItems, MenuSeparator } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/components/features/cart-context";
@@ -71,6 +71,10 @@ export default function Navbar() {
 
 
 
+  const handleViewOrder = async () => {
+    router.push("/orderview");
+  }
+
   return (
     <Disclosure
       as="nav"
@@ -132,7 +136,7 @@ export default function Navbar() {
                 <MenuButton className="relative flex rounded-full bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <img
                     alt=""
-                    src= "/user.png"
+                    src="/user.png"
                     className="h-8 w-8 rounded-full"
                   />
                 </MenuButton>
@@ -141,15 +145,23 @@ export default function Navbar() {
                 {userInfo ? (
                   <>
                     <MenuItem>
-                      <span className="block px-4 py-2 text-sm text-gray-700">
-                        {userInfo.name || "Name"}
+                      <span className="block px-4 py-2 text-sm text-gray-700 font-bold">
+                        Tên: {userInfo.name || "Name"}
                       </span>
                     </MenuItem>
-
                     <MenuItem>
-                      <span className="block px-4 py-2 text-sm text-gray-700">
-                        {userInfo.email || "Email"}
+                      <span className="block px-4 py-2 text-sm text-gray-700 font-bold">
+                        Email: {userInfo.email || "Email"}
                       </span>
+                    </MenuItem>
+                    <hr/>
+                    <MenuItem>
+                      <button
+                        onClick={handleViewOrder}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Xem đơn hàng
+                      </button>
                     </MenuItem>
                     <MenuItem>
                       <button
@@ -226,9 +238,9 @@ export default function Navbar() {
                         <center><p className="text-sm font-semibold">{item.title}</p></center>
                         <p>
                           <center>
-                          <div className="text-s text-amber-500 font-semibold">
-                            {(item.price * item.quantity).toLocaleString("vi-VN")} VNĐ
-                          </div>
+                            <div className="text-s text-amber-500 font-semibold">
+                              {(item.price * item.quantity).toLocaleString("vi-VN")} VNĐ
+                            </div>
                           </center>
                           <center>
                             <div className="flex items-center justify-center space-x-4">

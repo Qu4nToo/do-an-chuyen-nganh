@@ -16,7 +16,6 @@ export default function Home() {
       <CartProvider>
         <TitleProvider>
           <Navbar />
-          
           <div className="w-5/6 h-full mx-auto">
             <BannerCard />
           </div>
