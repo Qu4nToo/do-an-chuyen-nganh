@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 const ChatBot = () => {
   useEffect(() => {
     window.embeddedChatbotConfig = {
-      chatbotId: "V38ht80CgFKI4l_rYsvb-",
+      chatbotId: "HgkpakXU3xmH0yoAOKRU7",
       domain: "www.chatbase.co",
     };
 
