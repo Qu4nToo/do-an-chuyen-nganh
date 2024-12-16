@@ -18,15 +18,21 @@ interface CartContextProps {
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  // Initialize cart state from localStorage or set it as an empty array
-  const [cart, setCart] = useState<CartItem[]>(() => {
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  // Use useEffect to load the cart from localStorage after the component mounts
+  useEffect(() => {
     const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []); // Empty dependency array ensures this runs once after the initial render
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    if (cart.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
   }, [cart]);
 
   const addToCart = (item: CartItem) => {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Enter from "@/components/features/google";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,12 +10,18 @@ import { useRouter } from 'next/navigation';
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import { sha3_512 } from 'js-sha3';
+import { FaEyeSlash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 // Login Component
 export function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,18 +43,16 @@ export function Login() {
             if (user && hashedPassword === user.passWord) {
                 alert("Đăng nhập thành công!");
                 if (user.role.roleName === "Admin") {
-                    sessionStorage.setItem("user_info", JSON.stringify(user));
                     router.push('/admin');
                 } else {
-                    sessionStorage.setItem("user_info", JSON.stringify(user));
                     router.push('/');
                 }
-                
+                sessionStorage.setItem("user_info", JSON.stringify(user));
             } else {
-                alert('Invalid password');
+                setError('Invalid email or password');
             }
         } catch (error: any) {
-            alert('Invalid email');
+            setError(error.message); // Handle errors like user not found, server issues, etc.
         }
     };
 
@@ -67,14 +70,23 @@ export function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <Label htmlFor="password">Mật khẩu</Label>
-                <Input
-                    className="mt-2 mb-2 bg-transparent rounded-full"
-                    type="password"
-                    id="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                    <Input
+                        className="mt-2 mb-2 bg-transparent rounded-full"
+                        type={showPassword ? 'text' : 'password'}
+                        id="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button
+                        type="button"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                        onClick={togglePasswordVisibility}
+                    >
+                        {showPassword ? <FaEye /> : <FaEyeSlash />}
+                    </button>
+                </div>
                 <center>
                     <Button className="bg-gradient-to-r from-[#FFA008] to-[#FF6F00] text-white font-bold py-2 px-4 rounded" type="submit">
                         Đăng nhập
@@ -106,7 +118,14 @@ export function Sign() {
     const [roles, setRoles] = useState<Role[]>([]); // set to array of roles
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword1, setShowPassword1] = useState(false);
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+    const togglePasswordVisibility1 = () => {
+        setShowPassword1(!showPassword1);
+    };
     useEffect(() => {
         axios
             .get("http://localhost:5000/api/admin/role/get")
@@ -149,8 +168,11 @@ export function Sign() {
                 description: "New User has been added successfully.",
             });
 
+            // Reset form
+
             setConfirmPassword('');
 
+            // Register user with Firebase
             setNewUser({
                 name: '',
                 email: '',
@@ -190,25 +212,43 @@ export function Sign() {
                     onChange={handleInputChange}
                 />
                 <Label htmlFor="password">Mật khẩu</Label>
-                <Input
-                    className="mt-2 mb-4 bg-transparent rounded-full"
-                    type="password"
-                    id="password"
-                    name="passWord"
-                    placeholder="Password"
-                    value={newUser.passWord}
-                    onChange={handleInputChange}
-                />
+                <div className="relative">
+                    <Input
+                        className="mt-2 mb-4 bg-transparent rounded-full"
+                        type={showPassword ? 'text' : 'password'}
+                        id="password"
+                        name="passWord"
+                        placeholder="Password"
+                        value={newUser.passWord}
+                        onChange={handleInputChange}
+                    />
+                    <button
+                        type="button"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                        onClick={togglePasswordVisibility}
+                    >
+                        {showPassword ? <FaEye /> : <FaEyeSlash />}
+                    </button>
+                </div>
                 <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-                <Input
-                    className="mt-2 mb-4 bg-transparent rounded-full"
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    placeholder="Repeat password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                />
+                <div className="relative">
+                    <Input
+                        className="mt-2 mb-4 bg-transparent rounded-full"
+                        type={showPassword1 ? 'text' : 'password'}
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Repeat password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                    <button
+                        type="button"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                        onClick={togglePasswordVisibility1}
+                    >
+                        {showPassword1 ? <FaEye /> : <FaEyeSlash />}
+                    </button>
+                </div>
                 <center>
                     <Button
                         className="bg-gradient-to-r from-[#FFA008] to-[#FF6F00] text-white font-bold py-2 px-4 rounded"
@@ -239,4 +279,3 @@ export function RSign() {
         />
     );
 }
-
