@@ -22,18 +22,15 @@ const CheckoutPage = () => {
   const { cart, removeFromCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [isOrderSaved, setIsOrderSaved] = useState(false); // Track if the order is saved
-  const [currentStep, setCurrentStep] = useState(1); // Track the current step (1: Cart, 2: Order Info, 3: Payment)
+  const [isOrderSaved, setIsOrderSaved] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1); 
 
   useEffect(() => {
-    // Retrieve the user_info from sessionStorage
     const storedUserInfo = sessionStorage.getItem('user_info');
     if (storedUserInfo) {
       const user = JSON.parse(storedUserInfo);
       setUserInfo(user);
     }
-
-    // Set total amount from the cart
     setTotalAmount(cart.reduce((total, item) => total + item.price * item.quantity, 0));
   }, [cart]);
 
@@ -50,27 +47,26 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-      // Step 1: Create the order and get the orderID
+      const now = new Date();
       const orderResponse = await axios.post('http://localhost:5000/api/admin/order/create', {
         status: 'Pending',
         address,
         phone,
         notice: notice || 'No notice',
-        orderDate: new Date().toISOString(),
-        userID: userInfo.id,
+        orderDate: new Date(now.getTime() + 7 * 60 * 60 * 1000).toISOString(),
+        userID: userInfo?.id,
         paymentMethod: selectedMethod,
         totalAmount,
       });
 
       if (orderResponse.status === 200) {
-        const orderID = orderResponse.data.id; // Get the orderID from the response
+        const orderID = orderResponse.data.id; 
 
-        // Save orderID in sessionStorage
         sessionStorage.setItem('orderID', orderID);
-        setIsOrderSaved(true); // Mark the order as saved
+        setIsOrderSaved(true); 
 
-        // Move to the next step (Order Info -> Payment)
-        setCurrentStep(2); // Step 2 now (Order Info)
+
+        setCurrentStep(2); 
 
         toast({
           title: 'Order Saved',
@@ -86,7 +82,7 @@ const CheckoutPage = () => {
       }
 
     } catch (error : any) {
-      console.error('Error details:', error.response?.data); // Log the error response
+      console.error('Error details:', error.response?.data);
       toast({
         title: 'Error',
         description: error.response?.data?.error || 'An error occurred.',
@@ -110,7 +106,6 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-      // Retrieve the orderID from sessionStorage
       const orderID = sessionStorage.getItem('orderID');
       if (!orderID) {
         toast({
@@ -121,20 +116,17 @@ const CheckoutPage = () => {
         return;
       }
 
-      // Step 2: Create order details using the orderID
       const orderDetailsPromises = cart.map((item) => {
         return axios.post('http://localhost:5000/api/admin/orderdetail/create', {
-          orderID: orderID,  // Pass the orderID here
+          orderID: orderID, 
           productID: item.id,
           totalPrice: item.price * item.quantity,
           quantity: item.quantity,
         });
       });
 
-      // Wait for all order details to be created
       const detailsResponses = await Promise.all(orderDetailsPromises);
 
-      // Step 3: Check if all order details were successfully created
       const allSuccess = detailsResponses.every(response => response.status === 200);
       if (allSuccess) {
         toast({
@@ -151,15 +143,12 @@ const CheckoutPage = () => {
       }
 
       try {
-        // Gọi API để tạo payment URL
         const response = `http://localhost:5000/order/create_payment_url?amount=${totalAmount}`
 
-        // Kiểm tra nếu API trả về paymentUrl
         const paymentUrl = response;
 
         if (paymentUrl) {
-          // Chuyển hướng người dùng đến paymentUrl
-          window.location.href = paymentUrl;  // Chuyển hướng tới URL thanh toán
+          window.location.href = paymentUrl;  
         } else {
           console.log(paymentUrl);
           alert("Có lỗi xảy ra khi tạo URL thanh toán.");
@@ -170,7 +159,7 @@ const CheckoutPage = () => {
       }
 
     } catch (error :any) {
-      console.error('Error details:', error.response?.data); // Log the error response
+      console.error('Error details:', error.response?.data); 
       toast({
         title: 'Error',
         description: error.response?.data?.error || 'An error occurred.',
@@ -193,7 +182,6 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-      // Retrieve the orderID from sessionStorage
       const orderID = sessionStorage.getItem('orderID');
       if (!orderID) {
         toast({
@@ -204,20 +192,17 @@ const CheckoutPage = () => {
         return;
       }
 
-      // Step 2: Create order details using the orderID
       const orderDetailsPromises = cart.map((item) => {
         return axios.post('http://localhost:5000/api/admin/orderdetail/create', {
-          orderID: orderID,  // Pass the orderID here
+          orderID: orderID, 
           productID: item.id,
           totalPrice: item.price * item.quantity,
           quantity: item.quantity,
         });
       });
 
-      // Wait for all order details to be created
       const detailsResponses = await Promise.all(orderDetailsPromises);
 
-      // Step 3: Check if all order details were successfully created
       const allSuccess = detailsResponses.every(response => response.status === 200);
       if (allSuccess) {
         toast({
@@ -237,7 +222,7 @@ const CheckoutPage = () => {
       alert("Đặt hàng thành công");
 
     } catch (error: any) {
-      console.error('Error details:', error.response?.data); // Log the error response
+      console.error('Error details:', error.response?.data);
       toast({
         title: 'Error',
         description: error.response?.data?.error || 'An error occurred.',
@@ -247,8 +232,6 @@ const CheckoutPage = () => {
       setLoading(false);
     }
   };
-
-  // Create progress steps based on currentStep value
   const renderProgressSteps = () => {
     const steps = [
       { label: 'Nhập thông tin', completed: currentStep >= 1 },
@@ -276,7 +259,6 @@ const CheckoutPage = () => {
     <div className="bg-[url('/background.jpg')] py-4">
       <div className="checkout-page flex flex-col items-center space-y-6 p-4 border mx-auto">
         <div className="p-3 md:py-10 md:px-40 w-auto border-2 bg-white border-black rounded-md">
-          {/* Render progress steps */}
           {renderProgressSteps()}
 
           <div className="w-full max-w-md">
@@ -298,7 +280,7 @@ const CheckoutPage = () => {
                   placeholder="Your Phone Number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  readOnly={isOrderSaved} // Make readonly if order is saved
+                  readOnly={isOrderSaved}
                 />
               </div>
               <div>
@@ -308,7 +290,7 @@ const CheckoutPage = () => {
                   placeholder="Your Address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  readOnly={isOrderSaved} // Make readonly if order is saved
+                  readOnly={isOrderSaved}
                 />
               </div>
               <div>
@@ -318,7 +300,7 @@ const CheckoutPage = () => {
                   placeholder="Your Notice"
                   value={notice}
                   onChange={(e) => setNotice(e.target.value)}
-                  readOnly={isOrderSaved} // Make readonly if order is saved
+                  readOnly={isOrderSaved}
                 />
               </div>
             </div>
