@@ -16,7 +16,7 @@
     "request": "^2.88.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "validator": "^13.12.0"
+    "validator": "^13.15.22"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
